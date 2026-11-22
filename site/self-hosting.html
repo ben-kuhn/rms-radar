@@ -99,7 +99,7 @@ docker run --rm -v rms-radar_rms-radar-data:/data -v "$PWD":/backup \
   alpine tar czf /backup/rms-radar-data.tgz -C /data .</code></pre>
   <p>The data is disposable but contains the gateway cache and tiles, which make startup/offline use faster. The volume name follows the Compose project name; check with <code>docker volume ls</code>.</p>
 
-  <p><strong>Frequency display:</strong> channel frequencies are radio dial frequencies. HF values are shown 1.5 kHz below Winlink's USB center frequency; VHF/UHF values are unchanged.</p>
+  <p><strong>Frequency display:</strong> channel frequencies are radio dial frequencies. HF values are shown 1.5 kHz below Winlink's USB center frequency with 100 Hz precision; VHF/UHF values are unchanged.</p>
 
   <h3>Service codes and admin editing</h3>
   <p>Servers do not allow service-code editing by default. To enable it, set an admin token and enter the same token in the UI:</p>
