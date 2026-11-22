@@ -115,6 +115,8 @@ offline.
   UTC schedule when a mode/frequency is only available part of the day.
 - **Uses dial frequencies for HF** — Winlink reports the USB center frequency;
   RMS Radar subtracts 1.5 kHz for display, matching the frequency you tune.
+  For example, Winlink's 7.0425 MHz center is shown as **7.041 MHz**. VHF/UHF
+  frequencies are unchanged.
 - **Ranks by propagation** — a built-in heuristic works everywhere, and an
   optional VOACAP engine gives point-to-point HF forecasts.
 - **Hides implausible paths** — 0% VHF/UHF results are dropped while ranking,

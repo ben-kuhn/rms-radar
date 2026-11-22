@@ -56,7 +56,7 @@ Update with `docker compose pull && docker compose up -d`. The `/data` volume
 holds the gateway cache, tiles, conditions, and the saved service-code
 selection; back it up if you care about offline startup.
 
-**Image tags:** `latest`, `1.0`, `1.0.7`, and `edge` (main). Images are
+**Image tags:** `latest`, `1.0`, `1.0.8`, and `edge` (main). Images are
 multi-arch for linux/amd64 and linux/arm64. The container is also built and
 smoke-tested in CI.
 
@@ -351,6 +351,12 @@ workflow publishes its checksum next to it.
 | `GET /api/config` | Service codes, version, VOACAP status, tile URL, editing flag |
 | `POST /api/refresh` | Force a gateway refresh (same-origin JSON; five-minute cooldown) |
 | `POST /api/servicecodes/config` | Change the fetched codes (desktop same-origin, or `X-RMS-Radar-Admin` on a server) |
+
+**Frequency convention:** the `frequency_hz` and `frequency` fields returned by
+`/api/gateways` and `/api/rank` are **radio dial frequencies**. Winlink reports
+the USB center frequency for HF channels, so RMS Radar subtracts 1.5 kHz before
+serving or displaying them. VHF/UHF frequencies are not offset. For example,
+Winlink's 7.0425 MHz center is returned and shown as **7.041 MHz**.
 
 ## Offline behavior
 
