@@ -203,9 +203,11 @@ func formatFrequency(hz float64) string {
 	}
 	switch {
 	case hz >= 1e9:
-		return trimZeros(fmt.Sprintf("%.3f", hz/1e9)) + " GHz"
+		return trimZeros(fmt.Sprintf("%.4f", hz/1e9)) + " GHz"
 	case hz >= 1e6:
-		return trimZeros(fmt.Sprintf("%.3f", hz/1e6)) + " MHz"
+		// Four decimal places give 100 Hz resolution; three would round
+		// 7.1013 MHz to 7.101 and make the dial frequency unusable.
+		return trimZeros(fmt.Sprintf("%.4f", hz/1e6)) + " MHz"
 	case hz >= 1e3:
 		return trimZeros(fmt.Sprintf("%.3f", hz/1e3)) + " kHz"
 	default:

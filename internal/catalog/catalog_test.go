@@ -47,6 +47,7 @@ func TestFormatFrequency(t *testing.T) {
 	cases := map[float64]string{
 		0:         "",
 		7103000:   "7.103 MHz",
+		7101300:   "7.1013 MHz",
 		145030000: "145.03 MHz",
 		1500:      "1.5 kHz",
 	}

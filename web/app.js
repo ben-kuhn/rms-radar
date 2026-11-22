@@ -343,7 +343,7 @@ function firstGrid(st) {
 
 function fmtHz(hz) {
   if (!hz) return "";
-  if (hz >= 1e6) return (hz / 1e6).toFixed(3).replace(/0+$/, "").replace(/\.$/, "") + " MHz";
+  if (hz >= 1e6) return (hz / 1e6).toFixed(4).replace(/0+$/, "").replace(/\.$/, "") + " MHz";
   if (hz >= 1e3) return (hz / 1e3).toFixed(1) + " kHz";
   return hz + " Hz";
 }
