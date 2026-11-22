@@ -39,18 +39,20 @@ var dedicatedModemCodes = map[string]bool{
 // VardeFM, MODEM73, DATA2G, IONHF, XARA), otherwise it is exactly what the Winlink API
 // reports. RawMode keeps the API value either way.
 type Channel struct {
-	ServiceCode    string  `json:"service_code"`
-	Mode           string  `json:"mode"`         // display label
-	RawMode        string  `json:"raw_mode"`     // as reported by Winlink
-	ModeFamily     string  `json:"mode_family"`  // VARA, VARA FM, Mercury, ...
-	FrequencyHz    float64 `json:"frequency_hz"` // radio dial frequency
-	Frequency      string  `json:"frequency"`    // human-readable dial frequency
-	Gridsquare     string  `json:"gridsquare"`
-	OperatingHours string  `json:"operating_hours"`
-	Baud           string  `json:"baud,omitempty"`
-	RadioRange     string  `json:"radio_range,omitempty"`
-	Antenna        string  `json:"antenna,omitempty"`
-	Band           string  `json:"band"`
+	ServiceCode       string  `json:"service_code"`
+	Mode              string  `json:"mode"`                // display label
+	RawMode           string  `json:"raw_mode"`            // as reported by Winlink
+	ModeFamily        string  `json:"mode_family"`         // VARA, VARA FM, Mercury, ...
+	FrequencyHz       float64 `json:"frequency_hz"`        // radio dial frequency
+	Frequency         string  `json:"frequency"`           // human-readable dial frequency
+	CenterFrequencyHz float64 `json:"center_frequency_hz"` // Winlink USB center
+	CenterFrequency   string  `json:"center_frequency"`    // human-readable center frequency
+	Gridsquare        string  `json:"gridsquare"`
+	OperatingHours    string  `json:"operating_hours"`
+	Baud              string  `json:"baud,omitempty"`
+	RadioRange        string  `json:"radio_range,omitempty"`
+	Antenna           string  `json:"antenna,omitempty"`
+	Band              string  `json:"band"`
 }
 
 // Station is a gateway with its channels flattened and enriched.
@@ -111,18 +113,20 @@ func normalizeChannel(ch cmsapi.GatewayChannel) Channel {
 		dialHz -= hfDialOffsetHz
 	}
 	return Channel{
-		ServiceCode:    sc,
-		Mode:           mode,
-		RawMode:        raw,
-		ModeFamily:     modeFamily(mode),
-		FrequencyHz:    dialHz,
-		Frequency:      formatFrequency(dialHz),
-		Gridsquare:     ch.Gridsquare,
-		OperatingHours: ch.OperatingHours,
-		Baud:           ch.Baud,
-		RadioRange:     ch.RadioRange,
-		Antenna:        ch.Antenna,
-		Band:           bandForFrequency(dialHz),
+		ServiceCode:       sc,
+		Mode:              mode,
+		RawMode:           raw,
+		ModeFamily:        modeFamily(mode),
+		FrequencyHz:       dialHz,
+		Frequency:         formatFrequency(dialHz),
+		CenterFrequencyHz: ch.Frequency,
+		CenterFrequency:   formatFrequency(ch.Frequency),
+		Gridsquare:        ch.Gridsquare,
+		OperatingHours:    ch.OperatingHours,
+		Baud:              ch.Baud,
+		RadioRange:        ch.RadioRange,
+		Antenna:           ch.Antenna,
+		Band:              bandForFrequency(dialHz),
 	}
 }
 

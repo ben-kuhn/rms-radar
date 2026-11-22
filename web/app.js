@@ -13,6 +13,7 @@ const state = {
   expanded: new Set(),   // callsigns whose full channel list is shown
   filters: { serviceCode: "", mode: "", band: "" },
   theme: "dark",
+  frequencyDisplay: "dial", // "dial" or "center"
 };
 
 const $ = (id) => document.getElementById(id);
@@ -22,6 +23,7 @@ const NOTICE_KEY = "rmsradar-notice-v1";
 
 // Mobile map/list switcher.
 const MOBILE_VIEW_KEY = "rmsradar-mobile-view";
+const FREQUENCY_KEY = "rmsradar-frequency-display";
 const MOBILE_QUERY = window.matchMedia("(max-width: 720px)");
 
 // Desktop (double-click) mode: main opens /?desktop=<token>.
@@ -47,6 +49,30 @@ function applyTheme(theme) {
   document.documentElement.dataset.theme = theme;
   try { localStorage.setItem("rmsradar-theme", theme); } catch (_) {}
   $("theme-btn").textContent = theme === "dark" ? "☀" : "◐";
+}
+
+/* ---------- frequency display ---------- */
+function applyFrequencyDisplay(mode, rerender = true) {
+  state.frequencyDisplay = mode === "center" ? "center" : "dial";
+  const btn = $("freq-btn");
+  if (btn) {
+    const center = state.frequencyDisplay === "center";
+    btn.textContent = center ? "Center" : "Dial";
+    btn.title = center
+      ? "Showing center frequencies; click for dial frequencies"
+      : "Showing dial frequencies; click for center frequencies";
+    btn.setAttribute("aria-label", `Frequency display: ${state.frequencyDisplay}`);
+  }
+  try { localStorage.setItem(FREQUENCY_KEY, state.frequencyDisplay); } catch (_) {}
+  if (rerender && map) {
+    map.closePopup();
+    applyFilters();
+  }
+}
+
+function channelFrequency(c) {
+  if (state.frequencyDisplay === "center" && c.center_frequency) return c.center_frequency;
+  return c.frequency || fmtHz(c.frequency_hz);
 }
 
 /* ---------- map ---------- */
@@ -322,7 +348,7 @@ function renderMarkers(stations) {
 function popupHTML(st, rank) {
   const channels = st.channels.map((c) =>
     `<div class="ch-row${rank && isRankedChannel(c, rank) ? " ch-best" : ""}"><span class="ch-mode"${modeTitle(c)}>${esc(c.mode)}</span>` +
-    `<span class="ch-freq">${esc(c.frequency || fmtHz(c.frequency_hz))}</span>` +
+    `<span class="ch-freq">${esc(channelFrequency(c))}</span>` +
     hoursHTML(c) +
     `<span class="ch-sc">${esc(c.service_code || "PUBLIC")}</span></div>`).join("");
   const rankLine = rank
@@ -401,7 +427,7 @@ function renderList(stations) {
         (r ? ` · ${r.distance_km.toFixed(0)} km` : "") +
         (r && r.note ? ` · ${esc(r.note)}` : "") + `</div>` +
       `<div class="station-channels">${shown.map((c) =>
-        `<div class="ch-row${r && isRankedChannel(c, r) ? " ch-best" : ""}"><span class="ch-mode"${modeTitle(c)}>${esc(c.mode)}</span><span class="ch-freq">${esc(c.frequency || fmtHz(c.frequency_hz))}</span>${hoursHTML(c)}<span class="ch-sc">${esc(c.service_code || "PUBLIC")}</span></div>`).join("")}` +
+        `<div class="ch-row${r && isRankedChannel(c, r) ? " ch-best" : ""}"><span class="ch-mode"${modeTitle(c)}>${esc(c.mode)}</span><span class="ch-freq">${esc(channelFrequency(c))}</span>${hoursHTML(c)}<span class="ch-sc">${esc(c.service_code || "PUBLIC")}</span></div>`).join("")}` +
         (chans.length > 4
           ? `<button type="button" class="more-ch">${expanded ? "Show less" : `+${chans.length - 4} more`}</button>`
           : "") +
@@ -786,6 +812,9 @@ function wireEvents() {
   $("refresh-btn").addEventListener("click", refreshGateways);
   $("rank-mode").addEventListener("change", applyFilters);
   $("theme-btn").addEventListener("click", () => applyTheme(state.theme === "dark" ? "light" : "dark"));
+  $("freq-btn").addEventListener("click", () => {
+    applyFrequencyDisplay(state.frequencyDisplay === "center" ? "dial" : "center");
+  });
 }
 
 /* ---------- boot ---------- */
@@ -793,6 +822,9 @@ function wireEvents() {
   let theme = "dark";
   try { theme = localStorage.getItem("rmsradar-theme") || "dark"; } catch (_) {}
   applyTheme(theme);
+  let frequencyDisplay = "dial";
+  try { frequencyDisplay = localStorage.getItem(FREQUENCY_KEY) || "dial"; } catch (_) {}
+  applyFrequencyDisplay(frequencyDisplay, false);
   initNotice();
   initMap();
   initMobileTabs();

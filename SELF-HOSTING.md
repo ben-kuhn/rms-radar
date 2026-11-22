@@ -56,7 +56,7 @@ Update with `docker compose pull && docker compose up -d`. The `/data` volume
 holds the gateway cache, tiles, conditions, and the saved service-code
 selection; back it up if you care about offline startup.
 
-**Image tags:** `latest`, `1.0`, `1.0.9`, and `edge` (main). Images are
+**Image tags:** `latest`, `1.0`, `1.0.10`, and `edge` (main). Images are
 multi-arch for linux/amd64 and linux/arm64. The container is also built and
 smoke-tested in CI.
 
@@ -353,11 +353,14 @@ workflow publishes its checksum next to it.
 | `POST /api/servicecodes/config` | Change the fetched codes (desktop same-origin, or `X-RMS-Radar-Admin` on a server) |
 
 **Frequency convention:** the `frequency_hz` and `frequency` fields returned by
-`/api/gateways` and `/api/rank` are **radio dial frequencies**. Winlink reports
-the USB center frequency for HF channels, so RMS Radar subtracts 1.5 kHz before
-serving or displaying them. VHF/UHF frequencies are not offset. For example,
-Winlink's 7.0425 MHz center is returned and shown as **7.041 MHz**. HF values
-retain 100 Hz precision (for example **7.1013 MHz**).
+`/api/gateways` and `/api/rank` are **radio dial frequencies** and are the
+default UI display. Winlink reports the USB center frequency for HF channels, so
+RMS Radar subtracts 1.5 kHz for those fields. The original center is also
+available as `center_frequency_hz` / `center_frequency`; the UI's **Dial /
+Center** toggle switches between them. VHF/UHF frequencies have no offset. For
+example, Winlink's 7.0425 MHz center is returned as dial **7.041 MHz** and
+center **7.0425 MHz**. HF values retain 100 Hz precision (for example
+**7.1013 MHz**).
 
 ## Offline behavior
 

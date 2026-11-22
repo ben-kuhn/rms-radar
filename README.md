@@ -118,6 +118,8 @@ offline.
   For example, Winlink's 7.0425 MHz center is shown as **7.041 MHz**. HF
   frequencies retain 100 Hz precision (for example **7.1013 MHz**), so the
   displayed dial frequency is usable directly. VHF/UHF frequencies are unchanged.
+- **Switch between dial and center** — dial is the default; the frequency
+  toggle shows Winlink's center frequency when you need it.
 - **Ranks by propagation** — a built-in heuristic works everywhere, and an
   optional VOACAP engine gives point-to-point HF forecasts.
 - **Hides implausible paths** — 0% VHF/UHF results are dropped while ranking,

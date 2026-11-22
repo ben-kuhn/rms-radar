@@ -99,7 +99,7 @@ docker run --rm -v rms-radar_rms-radar-data:/data -v "$PWD":/backup \
   alpine tar czf /backup/rms-radar-data.tgz -C /data .</code></pre>
   <p>The data is disposable but contains the gateway cache and tiles, which make startup/offline use faster. The volume name follows the Compose project name; check with <code>docker volume ls</code>.</p>
 
-  <p><strong>Frequency display:</strong> channel frequencies are radio dial frequencies. HF values are shown 1.5 kHz below Winlink's USB center frequency with 100 Hz precision; VHF/UHF values are unchanged.</p>
+  <p><strong>Frequency display:</strong> channel frequencies default to radio dial frequencies. HF values are shown 1.5 kHz below Winlink's USB center frequency with 100 Hz precision; VHF/UHF values are unchanged. Use the <strong>Dial / Center</strong> toggle to see Winlink's original center frequency.</p>
 
   <h3>Service codes and admin editing</h3>
   <p>Servers do not allow service-code editing by default. To enable it, set an admin token and enter the same token in the UI:</p>
@@ -117,7 +117,7 @@ docker run --rm -v rms-radar_rms-radar-data:/data -v "$PWD":/backup \
   <p>All server packages run the same CGO-free web binary and use a systemd unit with <code>DynamicUser</code>, a <code>StateDirectory</code>, and a read-only system filesystem.</p>
 
   <h3>Debian / Ubuntu</h3>
-  <pre><code>sudo apt install ./rms-radar_1.0.9_amd64.deb
+  <pre><code>sudo apt install ./rms-radar_1.0.10_amd64.deb
 sudo systemctl enable --now rms-radar
 curl -fsS http://127.0.0.1:8079/api/health</code></pre>
   <p>Edit <code>/etc/systemd/system/rms-radar.service.d/override.conf</code> or the packaged unit to change the bind address, service codes, or admin token:</p>
@@ -128,12 +128,12 @@ ExecStart=
 ExecStart=/usr/bin/rms-radar -d -listen 127.0.0.1:8079 -cache-dir /var/lib/rms-radar</code></pre>
 
   <h3>Fedora / RHEL</h3>
-  <pre><code>sudo dnf install ./rms-radar-1.0.9-1.*.rpm
+  <pre><code>sudo dnf install ./rms-radar-1.0.10-1.*.rpm
 sudo systemctl enable --now rms-radar</code></pre>
 
   <h3>Arch Linux</h3>
   <p>Install the released <code>.pkg.tar.zst</code>, or build the <code>PKGBUILD</code> from the repository:</p>
-  <pre><code>sudo pacman -U rms-radar-1.0.9-1-x86_64.pkg.tar.zst
+  <pre><code>sudo pacman -U rms-radar-1.0.10-1-x86_64.pkg.tar.zst
 sudo systemctl enable --now rms-radar</code></pre>
 
   <h3>NixOS</h3>
@@ -147,8 +147,8 @@ sudo systemctl enable --now rms-radar</code></pre>
 };</code></pre>
 
   <h3>Standalone binary</h3>
-  <pre><code>tar xzf rms-radar-web-1.0.9-linux-amd64.tar.gz
-./rms-radar-web-1.0.9-linux-amd64 -d \
+  <pre><code>tar xzf rms-radar-web-1.0.10-linux-amd64.tar.gz
+./rms-radar-web-1.0.10-linux-amd64 -d \
   -listen 127.0.0.1:8079 \
   -cache-dir /var/lib/rms-radar</code></pre>
   <p>Use the packaged systemd unit in <code>contrib/systemd/</code> as a starting point, or run the binary under your own service manager.</p>

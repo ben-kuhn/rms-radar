@@ -20,23 +20,25 @@ import (
 
 // rankedEntry is one (station, channel) candidate in a ranked result.
 type rankedEntry struct {
-	Callsign    string  `json:"callsign"`
-	Latitude    float64 `json:"latitude"`
-	Longitude   float64 `json:"longitude"`
-	Gridsquare  string  `json:"gridsquare"`
-	ServiceCode string  `json:"service_code"`
-	Mode        string  `json:"mode"`
-	ModeFamily  string  `json:"mode_family"`
-	Band        string  `json:"band"`
-	FrequencyHz float64 `json:"frequency_hz"`
-	Frequency   string  `json:"frequency"`
-	DistanceKm  float64 `json:"distance_km"`
-	BearingDeg  float64 `json:"bearing_deg"`
-	LinkQuality int     `json:"link_quality"`
-	BandOpen    bool    `json:"band_open"`
-	MUF         float64 `json:"muf_mhz,omitempty"`
-	Method      string  `json:"method"`
-	Note        string  `json:"note,omitempty"`
+	Callsign          string  `json:"callsign"`
+	Latitude          float64 `json:"latitude"`
+	Longitude         float64 `json:"longitude"`
+	Gridsquare        string  `json:"gridsquare"`
+	ServiceCode       string  `json:"service_code"`
+	Mode              string  `json:"mode"`
+	ModeFamily        string  `json:"mode_family"`
+	Band              string  `json:"band"`
+	FrequencyHz       float64 `json:"frequency_hz"`
+	Frequency         string  `json:"frequency"`
+	CenterFrequencyHz float64 `json:"center_frequency_hz"`
+	CenterFrequency   string  `json:"center_frequency"`
+	DistanceKm        float64 `json:"distance_km"`
+	BearingDeg        float64 `json:"bearing_deg"`
+	LinkQuality       int     `json:"link_quality"`
+	BandOpen          bool    `json:"band_open"`
+	MUF               float64 `json:"muf_mhz,omitempty"`
+	Method            string  `json:"method"`
+	Note              string  `json:"note,omitempty"`
 }
 
 // Per-request rank deadlines. app.go sets WriteTimeout to
@@ -182,23 +184,25 @@ func (s *Server) handleRank(w http.ResponseWriter, r *http.Request) {
 				}
 				ok[idx] = true
 				out[idx] = rankedEntry{
-					Callsign:    c.st.Callsign,
-					Latitude:    c.st.Latitude,
-					Longitude:   c.st.Longitude,
-					Gridsquare:  c.ch.Gridsquare,
-					ServiceCode: c.ch.ServiceCode,
-					Mode:        c.ch.Mode,
-					ModeFamily:  c.ch.ModeFamily,
-					Band:        c.ch.Band,
-					FrequencyHz: c.ch.FrequencyHz,
-					Frequency:   c.ch.Frequency,
-					DistanceKm:  pred.DistanceKm,
-					BearingDeg:  pred.BearingDeg,
-					LinkQuality: pred.LinkQuality,
-					BandOpen:    pred.BandOpen,
-					MUF:         pred.MUF,
-					Method:      pred.Method,
-					Note:        pred.Note,
+					Callsign:          c.st.Callsign,
+					Latitude:          c.st.Latitude,
+					Longitude:         c.st.Longitude,
+					Gridsquare:        c.ch.Gridsquare,
+					ServiceCode:       c.ch.ServiceCode,
+					Mode:              c.ch.Mode,
+					ModeFamily:        c.ch.ModeFamily,
+					Band:              c.ch.Band,
+					FrequencyHz:       c.ch.FrequencyHz,
+					Frequency:         c.ch.Frequency,
+					CenterFrequencyHz: c.ch.CenterFrequencyHz,
+					CenterFrequency:   c.ch.CenterFrequency,
+					DistanceKm:        pred.DistanceKm,
+					BearingDeg:        pred.BearingDeg,
+					LinkQuality:       pred.LinkQuality,
+					BandOpen:          pred.BandOpen,
+					MUF:               pred.MUF,
+					Method:            pred.Method,
+					Note:              pred.Note,
 				}
 			}
 		}()

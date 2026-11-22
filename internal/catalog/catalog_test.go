@@ -48,6 +48,7 @@ func TestFormatFrequency(t *testing.T) {
 		0:         "",
 		7103000:   "7.103 MHz",
 		7101300:   "7.1013 MHz",
+		7042500:   "7.0425 MHz",
 		145030000: "145.03 MHz",
 		1500:      "1.5 kHz",
 	}
@@ -114,6 +115,9 @@ func TestNormalizeHFUsesDialFrequency(t *testing.T) {
 		})
 		if ch.FrequencyHz != c.wantHz || ch.Frequency != c.wantString {
 			t.Errorf("%s: frequency = %v (%q), want %v (%q)", c.name, ch.FrequencyHz, ch.Frequency, c.wantHz, c.wantString)
+		}
+		if ch.CenterFrequencyHz != c.hz {
+			t.Errorf("%s: center frequency = %v, want %v", c.name, ch.CenterFrequencyHz, c.hz)
 		}
 	}
 }
