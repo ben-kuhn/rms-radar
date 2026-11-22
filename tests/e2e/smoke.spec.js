@@ -31,12 +31,12 @@ test("deployed UI loads with map tiles and data", async ({ page }) => {
   expect(await page.locator("#list li").count()).toBeGreaterThan(0);
   await expect(page.locator(".ch-hours").first()).toContainText(/24h|UTC|\d/);
 
-  // Frequencies default to dial; the toggle exposes Winlink's center value.
-  await expect(page.locator("#freq-btn")).toHaveText("Dial");
-  await page.locator("#freq-btn").click();
-  await expect(page.locator("#freq-btn")).toHaveText("Center");
-  await page.locator("#freq-btn").click();
-  await expect(page.locator("#freq-btn")).toHaveText("Dial");
+  // Frequencies default to dial; the radio group exposes Winlink's center value.
+  await expect(page.locator("#freq-dial")).toBeChecked();
+  await page.locator("#freq-center-label").click();
+  await expect(page.locator("#freq-center")).toBeChecked();
+  await page.locator("#freq-dial-label").click();
+  await expect(page.locator("#freq-dial")).toBeChecked();
 
   expect(badTileResponses, badTileResponses.join("\n")).toEqual([]);
 

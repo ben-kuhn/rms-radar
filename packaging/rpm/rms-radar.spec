@@ -10,7 +10,7 @@
 # local build provides it.
 
 Name:           rms-radar
-Version:        1.0.10
+Version:        1.0.11
 Release:        1%{?dist}
 Summary:        Winlink RMS gateway map with service-code filtering and propagation ranking
 
@@ -75,6 +75,8 @@ install -Dm644 contrib/desktop/rms-radar-1024.png %{buildroot}%{_datadir}/icons/
 %systemd_postun rms-radar.service
 
 %changelog
+* Sun Nov 22 2026 RMS Radar contributors - 1.0.11-1
+- Use a segmented radio control for dial/center
 * Sun Nov 22 2026 RMS Radar contributors - 1.0.10-1
 - Add dial/center frequency toggle
 * Sun Nov 22 2026 RMS Radar contributors - 1.0.9-1

@@ -54,14 +54,8 @@ function applyTheme(theme) {
 /* ---------- frequency display ---------- */
 function applyFrequencyDisplay(mode, rerender = true) {
   state.frequencyDisplay = mode === "center" ? "center" : "dial";
-  const btn = $("freq-btn");
-  if (btn) {
-    const center = state.frequencyDisplay === "center";
-    btn.textContent = center ? "Center" : "Dial";
-    btn.title = center
-      ? "Showing center frequencies; click for dial frequencies"
-      : "Showing dial frequencies; click for center frequencies";
-    btn.setAttribute("aria-label", `Frequency display: ${state.frequencyDisplay}`);
+  for (const input of document.querySelectorAll('input[name="frequency-display"]')) {
+    input.checked = input.value === state.frequencyDisplay;
   }
   try { localStorage.setItem(FREQUENCY_KEY, state.frequencyDisplay); } catch (_) {}
   if (rerender && map) {
@@ -812,9 +806,11 @@ function wireEvents() {
   $("refresh-btn").addEventListener("click", refreshGateways);
   $("rank-mode").addEventListener("change", applyFilters);
   $("theme-btn").addEventListener("click", () => applyTheme(state.theme === "dark" ? "light" : "dark"));
-  $("freq-btn").addEventListener("click", () => {
-    applyFrequencyDisplay(state.frequencyDisplay === "center" ? "dial" : "center");
-  });
+  for (const input of document.querySelectorAll('input[name="frequency-display"]')) {
+    input.addEventListener("change", () => {
+      if (input.checked) applyFrequencyDisplay(input.value);
+    });
+  }
 }
 
 /* ---------- boot ---------- */

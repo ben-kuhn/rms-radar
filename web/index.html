@@ -45,7 +45,13 @@
     <button id="rank-btn" class="btn btn-primary" title="Rank stations by predicted link success">Rank</button>
     <button id="refresh-btn" class="btn" title="Fetch the latest Winlink gateway list (at most once every five minutes)">Refresh</button>
     <button id="theme-btn" class="btn btn-icon" title="Toggle dark/light" aria-label="Toggle theme">◐</button>
-    <button id="freq-btn" class="btn" title="Showing dial frequencies; click for center frequencies" aria-label="Frequency display: dial">Dial</button>
+    <div class="field">
+      <span>Frequency</span>
+      <div class="segmented" role="radiogroup" aria-label="Frequency display">
+        <label id="freq-dial-label" for="freq-dial"><input id="freq-dial" type="radio" name="frequency-display" value="dial" checked><span>Dial</span></label>
+        <label id="freq-center-label" for="freq-center"><input id="freq-center" type="radio" name="frequency-display" value="center"><span>Center</span></label>
+      </div>
+    </div>
     <button id="quit-btn" class="btn" title="Quit RMS Radar" hidden>Quit</button>
     <a class="toplink" id="clients-link" data-doc="clients" href="clients.html" target="_blank" rel="noopener">Client setup</a>
     <a class="toplink" id="gateway-link" data-doc="gateway" href="gateway.html" target="_blank" rel="noopener">Gateway setup</a>
