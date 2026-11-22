@@ -28,7 +28,7 @@ services:
       - rms-radar-data:/data
     environment:
       TZ: UTC
-      RMSRADAR_SERVICE_CODES: "PUBLIC,MERCURY,VARDEFM,MODEM73,DATA2G,IONHF"
+      RMSRADAR_SERVICE_CODES: "PUBLIC,MERCURY,VARDEFM,MODEM73,DATA2G,IONHF,XARA"
     read_only: true
     tmpfs:
       - /tmp:size=64m
@@ -56,7 +56,7 @@ Update with `docker compose pull && docker compose up -d`. The `/data` volume
 holds the gateway cache, tiles, conditions, and the saved service-code
 selection; back it up if you care about offline startup.
 
-**Image tags:** `latest`, `1.0`, `1.0.6`, and `edge` (main). Images are
+**Image tags:** `latest`, `1.0`, `1.0.7`, and `edge` (main). Images are
 multi-arch for linux/amd64 and linux/arm64. The container is also built and
 smoke-tested in CI.
 
@@ -92,7 +92,7 @@ services.rms-radar = {
   enable = true;
   listenAddress = "0.0.0.0";
   port = 8079;
-  serviceCodes = [ "PUBLIC" "MERCURY" "VARDEFM" "MODEM73" "DATA2G" "IONHF" ];
+  serviceCodes = [ "PUBLIC" "MERCURY" "VARDEFM" "MODEM73" "DATA2G" "IONHF" "XARA" ];
 };
 ```
 
@@ -144,7 +144,7 @@ endpoints are token-guarded and disabled in `-d` service mode.
 | Flag | Env | Default | Description |
 |------|-----|---------|-------------|
 | `-listen` | `RMSRADAR_LISTEN` | `127.0.0.1:8079` | HTTP listen address (use `0.0.0.0:8079` to serve the LAN) |
-| `-service-codes` | `RMSRADAR_SERVICE_CODES` | `PUBLIC,MERCURY,VARDEFM,MODEM73,DATA2G,IONHF` | Comma-separated service codes to fetch (no wildcard) |
+| `-service-codes` | `RMSRADAR_SERVICE_CODES` | `PUBLIC,MERCURY,VARDEFM,MODEM73,DATA2G,IONHF,XARA` | Comma-separated service codes to fetch (no wildcard) |
 | `-refresh` | `RMSRADAR_REFRESH` | `24h` | Gateway list refresh interval; the UI **Refresh** button forces an update (five-minute cooldown) |
 | `-cache-dir` | `RMSRADAR_CACHE_DIR` | `./data` | Cache directory |
 | `-key` | `RMSRADAR_KEY` | Pat's community key | Winlink CMS access key |
@@ -173,14 +173,17 @@ because closing its window always quits.
 The service-code dropdown is built from the codes present in the fetched data,
 and the mode dropdown shows the modes those channels advertise. Community-modem
 codes are labelled with the service name: `MERCURY` → **Mercury**, `VARDEFM` →
-**VardeFM**, `MODEM73` → **MODEM73**, `DATA2G` → **DATA2G**, and `IONHF` →
-**IONHF**, even though the API advertises them under VARA, Packet, or ARDOP.
+**VardeFM**, `MODEM73` → **MODEM73**, `DATA2G` → **DATA2G**, `IONHF` →
+**IONHF**, and `XARA` → **XARA**, even though the API advertises them under
+VARA, Packet, or ARDOP.
 
 Dedicated project modems show only the service code. Their reported bandwidth is
 omitted because it varies by channel and configuration: `DATA2G` uses 500 or
 2400 Hz, `MODEM73` uses 600 or 2400 Hz, and `IONHF` is ARDOP-based. `PUBLIC`
 and private group codes keep the reported mode. The API's raw mode is
-preserved in `raw_mode` and shown as a hover hint.
+preserved in `raw_mode` and shown as a hover hint. HF frequencies are displayed
+as radio dial frequencies: Winlink reports the 3 kHz USB center, so RMS Radar
+subtracts 1.5 kHz (VHF/UHF frequencies are unchanged).
 
 The Winlink API has no wildcard for service codes, so `-service-codes` lists the
 codes to request. The default includes the documented public codes and the
@@ -194,6 +197,7 @@ known community codes:
 | `MODEM73` | MODEM73 gateways (community; variable packet speed) |
 | `DATA2G` | DATA2G gateways (community; variable VARA bandwidth) |
 | `IONHF` | IONHF gateways (community; ARDOP-based) |
+| `XARA` | XARA gateways (community) |
 | *other* | any community or private group code |
 
 The list is **runtime-configurable** — in the native and browser desktop apps,

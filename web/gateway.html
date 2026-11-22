@@ -34,7 +34,7 @@
   <ul>
     <li>Your base callsign must be authorized by a Winlink administrator as a gateway.</li>
     <li>Only publish a service you actually run 24/7, and only the modes you listen on.</li>
-    <li><code>PUBLIC</code> is the open amateur code. Community projects also publish under their own codes — for example <code>MERCURY</code>, <code>VARDEFM</code>, <code>MODEM73</code>, <code>DATA2G</code>, and <code>IONHF</code>. Codes that are not public are private group codes.</li>
+    <li><code>PUBLIC</code> is the open amateur code. Community projects also publish under their own codes — for example <code>MERCURY</code>, <code>VARDEFM</code>, <code>MODEM73</code>, <code>DATA2G</code>, <code>IONHF</code>, and <code>XARA</code>. Codes that are not public are private group codes.</li>
   </ul>
 
   <h2>RMS Trimode <span class="doc-os">HF · Windows</span></h2>
@@ -70,6 +70,12 @@ WL2KREPORT VARDEFM,  api.winlink.org, 80, CALL-10, EM38xx, 00-23, 7102800, VARA2
     <code>DATA2G</code>: give each report a distinct mode label
     (<code>PKT2400</code>, <code>VARA2750</code>, …) so the service codes do not
     collide.
+  </p>
+  <p class="doc-note">
+    <strong>HF frequency convention:</strong> Winlink stores the USB center
+    frequency. If your radio tunes <code>7.041 MHz</code>, the center is
+    <code>7.0425 MHz</code>. RMS Radar subtracts 1.5 kHz for display so the
+    listed frequency matches the dial.
   </p>
   <p>Common report labels (use the ones your gateway actually runs):</p>
   <table class="doc-table">

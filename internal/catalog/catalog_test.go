@@ -12,7 +12,7 @@ func TestModeFamily(t *testing.T) {
 		"Mercury": "Mercury", "VardeFM": "VardeFM",
 		"Mercury 500": "Mercury", "VardeFM WIDE": "VardeFM",
 		"MODEM73 2400": "MODEM73", "DATA2G 2750": "DATA2G",
-		"IONHF": "IONHF", "ARDOP 2000": "ARDOP",
+		"IONHF": "IONHF", "XARA": "XARA", "ARDOP 2000": "ARDOP",
 		"Packet 1200": "Packet", "Pactor 3": "PACTOR", "Robust Packet": "Robust Packet",
 		"WINMOR 1600": "WINMOR", "Unknown": "Other",
 	}
@@ -94,6 +94,29 @@ func TestNormalize(t *testing.T) {
 	}
 }
 
+func TestNormalizeHFUsesDialFrequency(t *testing.T) {
+	cases := []struct {
+		name       string
+		hz         float64
+		wantHz     float64
+		wantString string
+	}{
+		{"HF center to dial", 7042500, 7041000, "7.041 MHz"},
+		{"VHF unchanged", 145030000, 145030000, "145.03 MHz"},
+		{"6m unchanged", 50125000, 50125000, "50.125 MHz"},
+	}
+	for _, c := range cases {
+		ch := normalizeChannel(cmsapi.GatewayChannel{
+			SupportedModes: "VARA",
+			ServiceCode:    "PUBLIC",
+			Frequency:      c.hz,
+		})
+		if ch.FrequencyHz != c.wantHz || ch.Frequency != c.wantString {
+			t.Errorf("%s: frequency = %v (%q), want %v (%q)", c.name, ch.FrequencyHz, ch.Frequency, c.wantHz, c.wantString)
+		}
+	}
+}
+
 func TestCommunityModemLabels(t *testing.T) {
 	cases := []struct{ sc, raw, want string }{
 		{"MERCURY", "VARA", "Mercury"},
@@ -108,6 +131,8 @@ func TestCommunityModemLabels(t *testing.T) {
 		{"IONHF", "VARA 500", "IONHF"},
 		{"MODEM73", "ARDOP 2000", "MODEM73"},
 		{"DATA2G", "Packet 1200", "DATA2G"},
+		{"XARA", "VARA", "XARA"},
+		{"XARA", "VARA 500", "XARA"},
 		// Non-VARA modes under a community code keep their real mode.
 		{"MERCURY", "ARDOP 2000", "ARDOP 2000"},
 		{"VARDEFM", "Packet 1200", "Packet 1200"},

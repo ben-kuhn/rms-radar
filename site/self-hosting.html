@@ -52,7 +52,7 @@ services:
       - rms-radar-data:/data
     environment:
       TZ: UTC
-      RMSRADAR_SERVICE_CODES: "PUBLIC,MERCURY,VARDEFM,MODEM73,DATA2G,IONHF"
+      RMSRADAR_SERVICE_CODES: "PUBLIC,MERCURY,VARDEFM,MODEM73,DATA2G,IONHF,XARA"
     read_only: true
     tmpfs:
       - /tmp:size=64m
@@ -74,7 +74,7 @@ curl -fsS http://127.0.0.1:8079/api/health</code></pre>
   <table>
     <thead><tr><th>Variable</th><th>Default</th><th>Purpose</th></tr></thead>
     <tbody>
-      <tr><td><code>RMSRADAR_SERVICE_CODES</code></td><td><code>PUBLIC,MERCURY,VARDEFM,MODEM73,DATA2G,IONHF</code></td><td>Codes to fetch (no wildcard).</td></tr>
+      <tr><td><code>RMSRADAR_SERVICE_CODES</code></td><td><code>PUBLIC,MERCURY,VARDEFM,MODEM73,DATA2G,IONHF,XARA</code></td><td>Codes to fetch (no wildcard).</td></tr>
       <tr><td><code>RMSRADAR_ADMIN_TOKEN</code></td><td>unset</td><td>Enables service-code editing; required in the <code>X-RMS-Radar-Admin</code> header.</td></tr>
       <tr><td><code>RMSRADAR_REFRESH</code></td><td><code>24h</code></td><td>Automatic refresh interval.</td></tr>
       <tr><td><code>RMSRADAR_CACHE_DIR</code></td><td><code>/data</code></td><td>Gateway cache, tiles, conditions, and service-code selection.</td></tr>
@@ -105,7 +105,7 @@ docker run --rm -v rms-radar_rms-radar-data:/data -v "$PWD":/backup \
   <pre><code>curl -X POST http://127.0.0.1:8079/api/servicecodes/config \
   -H 'Content-Type: application/json' \
   -H 'X-RMS-Radar-Admin: change-me' \
-  -d '{"codes":["PUBLIC","MERCURY","VARDEFM","MODEM73","DATA2G","IONHF"]}'</code></pre>
+  -d '{"codes":["PUBLIC","MERCURY","VARDEFM","MODEM73","DATA2G","IONHF","XARA"]}'</code></pre>
   <p>Winlink does not publish private group codes. Add one only if your group has given it to you.</p>
 
   <h3>VOACAP</h3>
@@ -115,23 +115,23 @@ docker run --rm -v rms-radar_rms-radar-data:/data -v "$PWD":/backup \
   <p>All server packages run the same CGO-free web binary and use a systemd unit with <code>DynamicUser</code>, a <code>StateDirectory</code>, and a read-only system filesystem.</p>
 
   <h3>Debian / Ubuntu</h3>
-  <pre><code>sudo apt install ./rms-radar_1.0.6_amd64.deb
+  <pre><code>sudo apt install ./rms-radar_1.0.7_amd64.deb
 sudo systemctl enable --now rms-radar
 curl -fsS http://127.0.0.1:8079/api/health</code></pre>
   <p>Edit <code>/etc/systemd/system/rms-radar.service.d/override.conf</code> or the packaged unit to change the bind address, service codes, or admin token:</p>
   <pre><code>[Service]
-Environment=RMSRADAR_SERVICE_CODES=PUBLIC,MERCURY,VARDEFM,MODEM73,DATA2G,IONHF
+Environment=RMSRADAR_SERVICE_CODES=PUBLIC,MERCURY,VARDEFM,MODEM73,DATA2G,IONHF,XARA
 Environment=RMSRADAR_ADMIN_TOKEN=change-me
 ExecStart=
 ExecStart=/usr/bin/rms-radar -d -listen 127.0.0.1:8079 -cache-dir /var/lib/rms-radar</code></pre>
 
   <h3>Fedora / RHEL</h3>
-  <pre><code>sudo dnf install ./rms-radar-1.0.6-1.*.rpm
+  <pre><code>sudo dnf install ./rms-radar-1.0.7-1.*.rpm
 sudo systemctl enable --now rms-radar</code></pre>
 
   <h3>Arch Linux</h3>
   <p>Install the released <code>.pkg.tar.zst</code>, or build the <code>PKGBUILD</code> from the repository:</p>
-  <pre><code>sudo pacman -U rms-radar-1.0.6-1-x86_64.pkg.tar.zst
+  <pre><code>sudo pacman -U rms-radar-1.0.7-1-x86_64.pkg.tar.zst
 sudo systemctl enable --now rms-radar</code></pre>
 
   <h3>NixOS</h3>
@@ -140,13 +140,13 @@ sudo systemctl enable --now rms-radar</code></pre>
   enable = true;
   listenAddress = "127.0.0.1";
   port = 8079;
-  serviceCodes = [ "PUBLIC" "MERCURY" "VARDEFM" "MODEM73" "DATA2G" "IONHF" ];
+  serviceCodes = [ "PUBLIC" "MERCURY" "VARDEFM" "MODEM73" "DATA2G" "IONHF" "XARA" ];
   voacapl = pkgs.voacapl;
 };</code></pre>
 
   <h3>Standalone binary</h3>
-  <pre><code>tar xzf rms-radar-web-1.0.6-linux-amd64.tar.gz
-./rms-radar-web-1.0.6-linux-amd64 -d \
+  <pre><code>tar xzf rms-radar-web-1.0.7-linux-amd64.tar.gz
+./rms-radar-web-1.0.7-linux-amd64 -d \
   -listen 127.0.0.1:8079 \
   -cache-dir /var/lib/rms-radar</code></pre>
   <p>Use the packaged systemd unit in <code>contrib/systemd/</code> as a starting point, or run the binary under your own service manager.</p>

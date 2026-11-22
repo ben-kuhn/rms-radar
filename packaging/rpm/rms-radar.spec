@@ -10,7 +10,7 @@
 # local build provides it.
 
 Name:           rms-radar
-Version:        1.0.6
+Version:        1.0.7
 Release:        1%{?dist}
 Summary:        Winlink RMS gateway map with service-code filtering and propagation ranking
 
@@ -75,6 +75,8 @@ install -Dm644 contrib/desktop/rms-radar-1024.png %{buildroot}%{_datadir}/icons/
 %systemd_postun rms-radar.service
 
 %changelog
+* Sat Nov 21 2026 RMS Radar contributors - 1.0.7-1
+- Show HF dial frequencies and add XARA service code
 * Thu Nov 19 2026 RMS Radar contributors - 1.0.6-1
 - Display each channel operating hours
 * Thu Nov 19 2026 RMS Radar contributors - 1.0.5-1

@@ -19,6 +19,7 @@ var CommunityModems = map[string]string{
 	"MODEM73": "MODEM73",
 	"DATA2G":  "DATA2G",
 	"IONHF":   "IONHF",
+	"XARA":    "XARA",
 }
 
 // dedicatedModemCodes are service codes whose whole purpose is the modem
@@ -30,19 +31,20 @@ var dedicatedModemCodes = map[string]bool{
 	"MODEM73": true,
 	"DATA2G":  true,
 	"IONHF":   true,
+	"XARA":    true,
 }
 
 // Channel is a normalized, display-ready channel. Mode is the label to show;
 // for a community-modem service code that is the service's name (Mercury,
-// VardeFM, MODEM73, DATA2G, IONHF), otherwise it is exactly what the Winlink API
+// VardeFM, MODEM73, DATA2G, IONHF, XARA), otherwise it is exactly what the Winlink API
 // reports. RawMode keeps the API value either way.
 type Channel struct {
 	ServiceCode    string  `json:"service_code"`
 	Mode           string  `json:"mode"`        // display label
 	RawMode        string  `json:"raw_mode"`    // as reported by Winlink
 	ModeFamily     string  `json:"mode_family"` // VARA, VARA FM, Mercury, ...
-	FrequencyHz    float64 `json:"frequency_hz"`
-	Frequency      string  `json:"frequency"` // human readable
+	FrequencyHz    float64 `json:"frequency_hz"` // radio dial frequency
+	Frequency      string  `json:"frequency"`    // human-readable dial frequency
 	Gridsquare     string  `json:"gridsquare"`
 	OperatingHours string  `json:"operating_hours"`
 	Baud           string  `json:"baud,omitempty"`
@@ -92,6 +94,11 @@ func Normalize(status *cmsapi.GatewayStatus) []Station {
 	return stations
 }
 
+// Winlink reports HF channel frequencies as the center of the 3 kHz USB
+// passband. Radio dials (and PAT's gateway list) use the suppressed-carrier
+// frequency 1.5 kHz below that center. VHF/UHF FM channels are not offset.
+const hfDialOffsetHz = 1500
+
 func normalizeChannel(ch cmsapi.GatewayChannel) Channel {
 	raw := strings.TrimSpace(ch.SupportedModes)
 	if raw == "" {
@@ -99,19 +106,23 @@ func normalizeChannel(ch cmsapi.GatewayChannel) Channel {
 	}
 	sc := strings.ToUpper(strings.TrimSpace(ch.ServiceCode))
 	mode := communityMode(sc, raw)
+	dialHz := ch.Frequency
+	if dialHz > 0 && dialHz < 30e6 {
+		dialHz -= hfDialOffsetHz
+	}
 	return Channel{
 		ServiceCode:    sc,
 		Mode:           mode,
 		RawMode:        raw,
 		ModeFamily:     modeFamily(mode),
-		FrequencyHz:    ch.Frequency,
-		Frequency:      formatFrequency(ch.Frequency),
+		FrequencyHz:    dialHz,
+		Frequency:      formatFrequency(dialHz),
 		Gridsquare:     ch.Gridsquare,
 		OperatingHours: ch.OperatingHours,
 		Baud:           ch.Baud,
 		RadioRange:     ch.RadioRange,
 		Antenna:        ch.Antenna,
-		Band:           bandForFrequency(ch.Frequency),
+		Band:           bandForFrequency(dialHz),
 	}
 }
 
@@ -169,6 +180,8 @@ func modeFamily(mode string) string {
 		return "DATA2G"
 	case strings.HasPrefix(m, "IONHF"):
 		return "IONHF"
+	case strings.HasPrefix(m, "XARA"):
+		return "XARA"
 	case strings.HasPrefix(m, "ARDOP"):
 		return "ARDOP"
 	case strings.HasPrefix(m, "PACKET"):
@@ -205,7 +218,7 @@ func trimZeros(s string) string {
 	return strings.TrimRight(s, ".")
 }
 
-// bandForFrequency maps a center frequency in Hz to an amateur band name.
+// bandForFrequency maps a frequency in Hz to an amateur band name.
 func bandForFrequency(hz float64) string {
 	mhz := hz / 1e6
 	switch {

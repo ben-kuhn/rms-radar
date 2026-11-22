@@ -121,6 +121,9 @@ func TestServiceCodesFromDiskMigratesDefaults(t *testing.T) {
 	if _, ok := indexOf(got, "EMCOMM"); ok {
 		t.Fatalf("EMCOMM should not be in the default set: %v", got)
 	}
+	if _, ok := indexOf(got, "XARA"); !ok {
+		t.Fatalf("XARA missing from the default set: %v", got)
+	}
 
 	// The seven-code default briefly shipped with EMCOMM in 1.0.x. It must
 	// migrate to the current six-code default rather than persisting EMCOMM.

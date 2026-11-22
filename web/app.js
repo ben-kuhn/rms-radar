@@ -39,7 +39,7 @@ const BAND_ORDER = ["160m","80m","60m","40m","30m","20m","17m","15m","12m","10m"
 const VHF_MIN_HZ = 30e6;
 const VHF_BANDS = new Set(["6m", "2m", "1.25m", "70cm", "33cm", "23cm"]);
 const isHfChannel = (c) => !(c.frequency_hz >= VHF_MIN_HZ || VHF_BANDS.has(c.band));
-const MODE_ORDER = ["VARA","VARA FM","Mercury","VardeFM","MODEM73","DATA2G","IONHF","ARDOP","Packet","PACTOR","Robust Packet","WINMOR","Other"];
+const MODE_ORDER = ["VARA","VARA FM","Mercury","VardeFM","MODEM73","DATA2G","IONHF","XARA","ARDOP","Packet","PACTOR","Robust Packet","WINMOR","Other"];
 
 /* ---------- theme ---------- */
 function applyTheme(theme) {

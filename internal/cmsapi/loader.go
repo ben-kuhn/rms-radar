@@ -37,7 +37,7 @@ var serviceCodeRE = regexp.MustCompile(`^[A-Z0-9_]{1,16}$`)
 // not configure a list. Winlink exposes no wildcard and does not publish private
 // group codes, so these are the known public/community codes; users can add a
 // private group code in the desktop dialog or through the server admin API.
-var DefaultServiceCodes = []string{"PUBLIC", "MERCURY", "VARDEFM", "MODEM73", "DATA2G", "IONHF"}
+var DefaultServiceCodes = []string{"PUBLIC", "MERCURY", "VARDEFM", "MODEM73", "DATA2G", "IONHF", "XARA"}
 
 // NormalizeServiceCodes trims, uppercases, validates, deduplicates, and sorts
 // service codes. It rejects path separators, whitespace, and any other

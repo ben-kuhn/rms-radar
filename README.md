@@ -87,7 +87,7 @@ for `.deb`, `.rpm`, Arch, NixOS, and Docker details.
 1. **Enter your grid square** (for example `EM38xx`). Not sure? Use a
    [Maidenhead locator tool](https://www.levinecentral.com/ham/grid_square.php).
 2. **Pick a service code** — `PUBLIC` is the usual open amateur code.
-   `IONHF`, `MERCURY`, `VARDEFM`, `MODEM73`, and `DATA2G` are common
+   `IONHF`, `MERCURY`, `VARDEFM`, `MODEM73`, `DATA2G`, and `XARA` are common
    community codes; other projects and private groups use their own. You can
    also filter by band and mode.
 3. **Press Rank** to score the gateways by predicted link quality. Each row
@@ -106,13 +106,15 @@ offline.
 
 - **Maps the live Winlink gateway list** on OpenStreetMap.
 - **Filters by service code** — `PUBLIC`, `IONHF`, `MERCURY`, `VARDEFM`,
-  `MODEM73`, `DATA2G`, and any other community or private codes you configure.
+  `MODEM73`, `DATA2G`, `XARA`, and any other community or private codes you configure.
 - **Shows the real mode** for every channel. Mercury, VardeFM, IONHF, MODEM73,
   and DATA2G gateways are labelled from their service code, even when Winlink
   advertises them under VARA, ARDOP, or Packet. Variable modem widths are not
   shown for the dedicated project codes.
 - **Shows each channel's operating hours** — 24h for always-on channels, or the
   UTC schedule when a mode/frequency is only available part of the day.
+- **Uses dial frequencies for HF** — Winlink reports the USB center frequency;
+  RMS Radar subtracts 1.5 kHz for display, matching the frequency you tune.
 - **Ranks by propagation** — a built-in heuristic works everywhere, and an
   optional VOACAP engine gives point-to-point HF forecasts.
 - **Hides implausible paths** — 0% VHF/UHF results are dropped while ranking,
