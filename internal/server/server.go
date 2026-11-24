@@ -320,6 +320,11 @@ func (s *Server) handleServiceCodes(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	counts := map[string]int{}
+	// Include configured codes even when no gateway currently publishes them,
+	// so an opt-in code such as AETHER remains selectable instead of vanishing.
+	for _, sc := range s.loader.ServiceCodes() {
+		counts[sc] = 0
+	}
 	for _, st := range s.snapshotStations() {
 		for _, ch := range st.Channels {
 			sc := ch.ServiceCode

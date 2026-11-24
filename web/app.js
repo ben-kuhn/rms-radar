@@ -310,6 +310,11 @@ function populateBandMode() {
     }
   }
 
+  // Keep Aether visible in Winlink mode even before any gateway advertises it.
+  if (state.source === "winlink" && (state.config.service_codes || []).includes("AETHER")) {
+    modes.add("Aether");
+  }
+
   const bandSel = $("band");
   bandSel.innerHTML = "";
   bandSel.appendChild(opt("", "All bands"));
