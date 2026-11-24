@@ -12,7 +12,7 @@ func TestModeFamily(t *testing.T) {
 		"Mercury": "Mercury", "VardeFM": "VardeFM",
 		"Mercury 500": "Mercury", "VardeFM WIDE": "VardeFM",
 		"MODEM73 2400": "MODEM73", "DATA2G 2750": "DATA2G",
-		"IONHF": "IONHF", "XARA": "XARA", "Winlink/Aether": "Winlink/Aether", "ARDOP 2000": "ARDOP",
+		"IONHF": "IONHF", "XARA": "XARA", "Aether": "Aether", "ARDOP 2000": "ARDOP",
 		"Packet 1200": "Packet", "Pactor 3": "PACTOR", "Robust Packet": "Robust Packet",
 		"WINMOR 1600": "WINMOR", "Unknown": "Other",
 	}
@@ -138,8 +138,8 @@ func TestCommunityModemLabels(t *testing.T) {
 		{"DATA2G", "Packet 1200", "DATA2G"},
 		{"XARA", "VARA", "XARA"},
 		{"XARA", "VARA 500", "XARA"},
-		{"AETHER", "VARA", "Winlink/Aether"},
-		{"AETHER", "VARA HF", "Winlink/Aether"},
+		{"AETHER", "VARA", "Aether"},
+		{"AETHER", "VARA HF", "Aether"},
 		// Non-VARA modes under a community code keep their real mode.
 		{"MERCURY", "ARDOP 2000", "ARDOP 2000"},
 		{"VARDEFM", "Packet 1200", "Packet 1200"},

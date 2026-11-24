@@ -1,7 +1,7 @@
 # Maintainer: RMS Radar contributors
 
 pkgname=rms-radar
-pkgver=1.0.13
+pkgver=1.0.14
 pkgrel=1
 pkgdesc="Winlink RMS gateway map with service-code filtering and propagation ranking"
 arch=('x86_64' 'aarch64' 'armv7h')

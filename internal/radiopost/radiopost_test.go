@@ -46,14 +46,17 @@ func TestNormalize(t *testing.T) {
 	if st.LastStatus == "" || st.Comments != "Atlanta, GA" {
 		t.Errorf("last status/comments = %q/%q", st.LastStatus, st.Comments)
 	}
-	if len(st.Channels) != 2 {
-		t.Fatalf("channels = %d, want 2 (tcp/unknown skipped)", len(st.Channels))
+	if len(st.Channels) != 3 {
+		t.Fatalf("channels = %d, want 3 (tcp skipped, unknown kept)", len(st.Channels))
 	}
-	if got := st.Channels[0].Mode; got != "RadioPost/Aether" {
+	if got := st.Channels[0].Mode; got != "Aether" {
 		t.Errorf("aether mode = %q", got)
 	}
-	if got := st.Channels[1].Mode; got != "RadioPost/VARA HF" {
+	if got := st.Channels[1].Mode; got != "VARA HF" {
 		t.Errorf("vara mode = %q", got)
+	}
+	if got := st.Channels[2].Mode; got != "future" {
+		t.Errorf("unknown mode = %q, want raw modem name", got)
 	}
 	if st.Channels[0].ScanSeconds != 54 {
 		t.Errorf("scan_s = %d, want 54", st.Channels[0].ScanSeconds)

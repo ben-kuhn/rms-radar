@@ -56,7 +56,7 @@ Update with `docker compose pull && docker compose up -d`. The `/data` volume
 holds the gateway cache, tiles, conditions, and the saved service-code
 selection; back it up if you care about offline startup.
 
-**Image tags:** `latest`, `1.0`, `1.0.13`, and `edge` (main). Images are
+**Image tags:** `latest`, `1.0`, `1.0.14`, and `edge` (main). Images are
 multi-arch for linux/amd64 and linux/arm64. The container is also built and
 smoke-tested in CI.
 
@@ -175,7 +175,7 @@ The service-code dropdown is built from the codes present in the fetched data,
 and the mode dropdown shows the modes those channels advertise. Community-modem
 codes are labelled with the service name: `MERCURY` → **Mercury**, `VARDEFM` →
 **VardeFM**, `MODEM73` → **MODEM73**, `DATA2G` → **DATA2G**, `IONHF` →
-**IONHF**, `XARA` → **XARA**, and `AETHER` → **Winlink/Aether**, even though
+**IONHF**, `XARA` → **XARA**, and `AETHER` → **Aether**, even though
 the API advertises them under VARA, Packet, or ARDOP.
 
 Dedicated project modems show only the service code. Their reported bandwidth is
@@ -199,7 +199,7 @@ known community codes:
 | `DATA2G` | DATA2G gateways (community; variable VARA bandwidth) |
 | `IONHF` | IONHF gateways (community; ARDOP-based) |
 | `XARA` | XARA gateways (community) |
-| `AETHER` | Aether gateways (community; labelled Winlink/Aether) |
+| `AETHER` | Aether gateways (community; labelled Aether) |
 | *other* | any community or private group code |
 
 The list is **runtime-configurable** — in the native and browser desktop apps,
@@ -366,12 +366,12 @@ example, Winlink's 7.0425 MHz center is returned as dial **7.041 MHz** and
 center **7.0425 MHz**. HF values retain 100 Hz precision (for example
 **7.1013 MHz**).
 
-## RadioPost source
+## RadioPost service
 
 RadioPost is a separate gateway network, not a Winlink service code. The web UI
-has a **Source** selector: **Winlink** is the default, and **RadioPost** loads
+has a **Service** selector: **Winlink** is the default, and **RadioPost** loads
 the RadioPost directory instead. RadioPost does not use Winlink service codes,
-so the service-code filter and editor are hidden for that source.
+so the service-code filter and editor are hidden for that service.
 
 The server reads:
 
@@ -381,12 +381,11 @@ The server reads:
 
 The directory is cached for up to six hours. Status is polled once per
 `-radiopost-refresh` interval (default **10m**), with a hard minimum of **1m** as
-required by RadioPost. Gateways marked `test: true` and channels using `tcp` or
-unknown modem names are skipped. Known modems are labelled
-`RadioPost/Aether`, `RadioPost/Aether FM`, `RadioPost/ARDOP`,
-`RadioPost/AX.25`, `RadioPost/Mercury`, `RadioPost/VARA HF`, and
-`RadioPost/VARA FM`. `scan_s` is shown on each channel when a gateway scans
-multiple frequencies.
+required by RadioPost. Gateways marked `test: true` and channels using `tcp`
+are skipped. Known modems are shown by their plain names (`Aether`,
+`Aether FM`, `ARDOP`, `AX.25`, `Mercury`, `VARA HF`, `VARA FM`); other
+non-`tcp` names are preserved and shown as reported. `scan_s` is shown on each
+channel when a gateway scans multiple frequencies.
 
 ## Offline behavior
 

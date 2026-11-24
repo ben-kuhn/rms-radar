@@ -62,6 +62,7 @@ func (s *Server) handleRank(w http.ResponseWriter, r *http.Request) {
 		Band        string `json:"band"`
 		Mode        string `json:"mode"`
 		ServiceCode string `json:"service_code"`
+		Service     string `json:"service"` // "winlink" or "radiopost"
 	}
 	body := http.MaxBytesReader(w, r.Body, 1<<20)
 	dec := json.NewDecoder(body)
@@ -75,6 +76,20 @@ func (s *Server) handleRank(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	grid, band, mode, sc := rr.Grid, rr.Band, rr.Mode, rr.ServiceCode
+
+	stations := s.snapshotStations()
+	if strings.EqualFold(rr.Service, "radiopost") {
+		if s.radiopost == nil {
+			http.Error(w, "RadioPost is unavailable", http.StatusServiceUnavailable)
+			return
+		}
+		var err error
+		stations, _, err = s.radiopost.Snapshot(r.Context(), false)
+		if err != nil && len(stations) == 0 {
+			http.Error(w, "RadioPost directory unavailable", http.StatusBadGateway)
+			return
+		}
+	}
 
 	from, err := propagation.ParseLocator(grid)
 	if err != nil {
@@ -112,7 +127,7 @@ func (s *Server) handleRank(w http.ResponseWriter, r *http.Request) {
 		dist float64
 	}
 	var cands []cand
-	for _, st := range s.snapshotStations() {
+	for _, st := range stations {
 		to := propagation.Point{Lat: st.Latitude, Lon: st.Longitude}
 		d := propagation.DistanceKm(from, to)
 		for _, ch := range st.Channels {

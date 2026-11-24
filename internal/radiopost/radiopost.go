@@ -346,17 +346,27 @@ func normalizeGateway(gw gateway, live liveStatus, now time.Time) catalog.Statio
 	}
 	channels := make([]catalog.Channel, 0, len(gw.Channels))
 	for _, ch := range gw.Channels {
-		label, ok := modemLabels[strings.ToLower(strings.TrimSpace(ch.Modem))]
-		if !ok || ch.DialHz <= 0 {
+		rawModem := strings.TrimSpace(ch.Modem)
+		key := strings.ToLower(rawModem)
+		if key == "tcp" || ch.DialHz <= 0 {
 			continue
+		}
+		label, ok := modemLabels[key]
+		if !ok {
+			if rawModem == "" {
+				label = "Unknown"
+			} else {
+				// Preserve a new modem name rather than hiding the channel.
+				label = rawModem
+			}
 		}
 		band := strings.TrimSpace(ch.Band)
 		if band == "" {
 			band = catalog.BandForFrequency(ch.DialHz)
 		}
 		channels = append(channels, catalog.Channel{
-			Mode:              "RadioPost/" + label,
-			ModeFamily:        "RadioPost/" + label,
+			Mode:              label,
+			ModeFamily:        label,
 			FrequencyHz:       ch.DialHz,
 			Frequency:         catalog.FormatFrequency(ch.DialHz),
 			CenterFrequencyHz: ch.DialHz,

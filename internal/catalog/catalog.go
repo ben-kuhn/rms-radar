@@ -20,7 +20,7 @@ var CommunityModems = map[string]string{
 	"DATA2G":  "DATA2G",
 	"IONHF":   "IONHF",
 	"XARA":    "XARA",
-	"AETHER":  "Winlink/Aether",
+	"AETHER":  "Aether",
 }
 
 // dedicatedModemCodes are service codes whose whole purpose is the modem
@@ -189,8 +189,8 @@ func modeFamily(mode string) string {
 		return "IONHF"
 	case strings.HasPrefix(m, "XARA"):
 		return "XARA"
-	case strings.HasPrefix(m, "WINLINK/AETHER"):
-		return "Winlink/Aether"
+	case strings.HasPrefix(m, "AETHER"):
+		return "Aether"
 	case strings.HasPrefix(m, "ARDOP"):
 		return "ARDOP"
 	case strings.HasPrefix(m, "PACKET"):

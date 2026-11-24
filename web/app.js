@@ -43,7 +43,7 @@ const BAND_ORDER = ["160m","80m","60m","40m","30m","20m","17m","15m","12m","10m"
 const VHF_MIN_HZ = 30e6;
 const VHF_BANDS = new Set(["6m", "2m", "1.25m", "70cm", "33cm", "23cm"]);
 const isHfChannel = (c) => !(c.frequency_hz >= VHF_MIN_HZ || VHF_BANDS.has(c.band));
-const MODE_ORDER = ["VARA","VARA FM","Mercury","VardeFM","MODEM73","DATA2G","IONHF","XARA","Winlink/Aether","RadioPost/Aether","RadioPost/Aether FM","RadioPost/ARDOP","RadioPost/AX.25","RadioPost/Mercury","RadioPost/VARA HF","RadioPost/VARA FM","ARDOP","Packet","PACTOR","Robust Packet","WINMOR","Other"];
+const MODE_ORDER = ["VARA","VARA HF","VARA FM","Mercury","VardeFM","MODEM73","DATA2G","IONHF","XARA","Aether","Aether FM","ARDOP","AX.25","Packet","PACTOR","Robust Packet","WINMOR","Other"];
 
 /* ---------- theme ---------- */
 function applyTheme(theme) {
@@ -226,15 +226,18 @@ async function load() {
   applyTileLayer();
 
   if (state.source === "radiopost") {
-    const gateways = await fetchJSON("/api/radiopost/gateways");
+    const [gateways, conditions] = await Promise.all([
+      fetchJSON("/api/radiopost/gateways"),
+      fetchJSON("/api/conditions").catch(() => null),
+    ]);
     state.serviceCodes = [];
     state.stations = gateways || [];
-    state.conditions = null;
+    state.conditions = conditions;
     state.ranked.clear();
     $("status").textContent = `${state.stations.length} RadioPost gateways`;
     populateServiceCodes();
     populateBandMode();
-    $("conditions").hidden = true;
+    renderConditions();
     applyFilters();
     return;
   }
@@ -519,6 +522,7 @@ async function doRank() {
     band: $("band").value,
     mode: $("mode").value,
     service_code: $("service-code").value,
+    service: state.source,
   };
   const seq = ++state.rankSeq;
   if (state.rankAbort) state.rankAbort.abort();

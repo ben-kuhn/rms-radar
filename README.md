@@ -4,7 +4,7 @@
 
 RMS Radar shows Winlink gateways near you on a map, lets you filter by the
 service codes you care about, and ranks them by how likely you are to reach
-them. It can also load the separate RadioPost directory from the same Source
+them. It can also load the separate RadioPost directory from the same Service
 selector. It runs as a normal desktop app on macOS, Windows, and Linux — no server
 or command line required — and can also be self-hosted for a club or network.
 
@@ -122,9 +122,9 @@ offline.
   displayed dial frequency is usable directly. VHF/UHF frequencies are unchanged.
 - **Switch between dial and center** — dial is the default; the frequency
   toggle shows Winlink's center frequency when you need it.
-- **Two separate sources** — the **Source** dropdown switches between Winlink
+- **Two separate services** — the **Service** dropdown switches between Winlink
   and RadioPost. RadioPost hides Winlink service codes and shows its own
-  `RadioPost/Aether`, `RadioPost/VARA HF`, and other per-channel modes, plus
+  `Aether`, `VARA HF`, and other per-channel modes, plus
   `scan_s` for scanning gateways.
 - **Ranks by propagation** — a built-in heuristic works everywhere, and an
   optional VOACAP engine gives point-to-point HF forecasts.
