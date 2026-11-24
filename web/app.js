@@ -55,7 +55,7 @@ function applyTheme(theme) {
 
 /* ---------- frequency display ---------- */
 function applyFrequencyDisplay(mode, rerender = true) {
-  state.frequencyDisplay = mode === "center" ? "center" : "dial";
+  state.frequencyDisplay = (mode === "center" && state.source !== "radiopost") ? "center" : "dial";
   for (const input of document.querySelectorAll('input[name="frequency-display"]')) {
     input.checked = input.value === state.frequencyDisplay;
   }
@@ -63,6 +63,21 @@ function applyFrequencyDisplay(mode, rerender = true) {
   if (rerender && map) {
     map.closePopup();
     applyFilters();
+  }
+}
+
+function syncFrequencyAvailability() {
+  const center = $("freq-center");
+  const label = $("freq-center-label");
+  const available = state.source === "winlink";
+  if (center) center.disabled = !available;
+  if (label) {
+    label.title = available
+      ? ""
+      : "RadioPost publishes dial frequencies only; no center frequency is provided";
+  }
+  if (!available && state.frequencyDisplay === "center") {
+    applyFrequencyDisplay("dial", false);
   }
 }
 
@@ -87,6 +102,7 @@ function applySource(source, rerender = true) {
   }
   state.ranked.clear();
   try { localStorage.setItem(SOURCE_KEY, state.source); } catch (_) {}
+  syncFrequencyAvailability();
   if (rerender) {
     load().catch((err) => {
       $("status").textContent = "failed to load: " + err.message;

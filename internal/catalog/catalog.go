@@ -42,13 +42,13 @@ var dedicatedModemCodes = map[string]bool{
 // reports. RawMode keeps the API value either way.
 type Channel struct {
 	ServiceCode       string  `json:"service_code"`
-	Mode              string  `json:"mode"`                // display label
-	RawMode           string  `json:"raw_mode"`            // as reported by Winlink
-	ModeFamily        string  `json:"mode_family"`         // VARA, VARA FM, Mercury, ...
-	FrequencyHz       float64 `json:"frequency_hz"`        // radio dial frequency
-	Frequency         string  `json:"frequency"`           // human-readable dial frequency
-	CenterFrequencyHz float64 `json:"center_frequency_hz"` // Winlink USB center
-	CenterFrequency   string  `json:"center_frequency"`    // human-readable center frequency
+	Mode              string  `json:"mode"`                          // display label
+	RawMode           string  `json:"raw_mode"`                      // as reported by Winlink
+	ModeFamily        string  `json:"mode_family"`                   // VARA, VARA FM, Mercury, ...
+	FrequencyHz       float64 `json:"frequency_hz"`                  // radio dial frequency
+	Frequency         string  `json:"frequency"`                     // human-readable dial frequency
+	CenterFrequencyHz float64 `json:"center_frequency_hz,omitempty"` // Winlink USB center
+	CenterFrequency   string  `json:"center_frequency,omitempty"`    // human-readable center frequency
 	Gridsquare        string  `json:"gridsquare"`
 	OperatingHours    string  `json:"operating_hours"`
 	Baud              string  `json:"baud,omitempty"`

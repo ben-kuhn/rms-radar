@@ -22,7 +22,7 @@ import (
 )
 
 // version is overridable at link time via -ldflags "-X main.version=...".
-var version = "1.0.14"
+var version = "1.0.15"
 
 //go:embed all:web
 var webFS embed.FS

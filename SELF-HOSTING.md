@@ -56,7 +56,7 @@ Update with `docker compose pull && docker compose up -d`. The `/data` volume
 holds the gateway cache, tiles, conditions, and the saved service-code
 selection; back it up if you care about offline startup.
 
-**Image tags:** `latest`, `1.0`, `1.0.14`, and `edge` (main). Images are
+**Image tags:** `latest`, `1.0`, `1.0.15`, and `edge` (main). Images are
 multi-arch for linux/amd64 and linux/arm64. The container is also built and
 smoke-tested in CI.
 
@@ -364,7 +364,8 @@ available as `center_frequency_hz` / `center_frequency`; the UI's **Dial /
 Center** toggle switches between them. VHF/UHF frequencies have no offset. For
 example, Winlink's 7.0425 MHz center is returned as dial **7.041 MHz** and
 center **7.0425 MHz**. HF values retain 100 Hz precision (for example
-**7.1013 MHz**).
+**7.1013 MHz**). RadioPost provides only `dial_hz`, so its channels omit the
+center fields and the web UI disables the Center option for that service.
 
 ## RadioPost service
 
@@ -385,7 +386,9 @@ required by RadioPost. Gateways marked `test: true` and channels using `tcp`
 are skipped. Known modems are shown by their plain names (`Aether`,
 `Aether FM`, `ARDOP`, `AX.25`, `Mercury`, `VARA HF`, `VARA FM`); other
 non-`tcp` names are preserved and shown as reported. `scan_s` is shown on each
-channel when a gateway scans multiple frequencies.
+channel when a gateway scans multiple frequencies. RadioPost publishes dial
+frequencies only; it has no center-frequency field, so Center is disabled for
+RadioPost.
 
 ## Offline behavior
 

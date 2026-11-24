@@ -121,7 +121,8 @@ offline.
   frequencies retain 100 Hz precision (for example **7.1013 MHz**), so the
   displayed dial frequency is usable directly. VHF/UHF frequencies are unchanged.
 - **Switch between dial and center** — dial is the default; the frequency
-  toggle shows Winlink's center frequency when you need it.
+  toggle shows Winlink's center frequency when you need it. RadioPost publishes dial
+  frequencies only, so its Center option is disabled.
 - **Two separate services** — the **Service** dropdown switches between Winlink
   and RadioPost. RadioPost hides Winlink service codes and shows its own
   `Aether`, `VARA HF`, and other per-channel modes, plus

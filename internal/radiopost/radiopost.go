@@ -365,16 +365,14 @@ func normalizeGateway(gw gateway, live liveStatus, now time.Time) catalog.Statio
 			band = catalog.BandForFrequency(ch.DialHz)
 		}
 		channels = append(channels, catalog.Channel{
-			Mode:              label,
-			ModeFamily:        label,
-			FrequencyHz:       ch.DialHz,
-			Frequency:         catalog.FormatFrequency(ch.DialHz),
-			CenterFrequencyHz: ch.DialHz,
-			CenterFrequency:   catalog.FormatFrequency(ch.DialHz),
-			Gridsquare:        gw.Grid,
-			OperatingHours:    hoursText,
-			ScanSeconds:       ch.ScanS,
-			Band:              band,
+			Mode:           label,
+			ModeFamily:     label,
+			FrequencyHz:    ch.DialHz,
+			Frequency:      catalog.FormatFrequency(ch.DialHz),
+			Gridsquare:     gw.Grid,
+			OperatingHours: hoursText,
+			ScanSeconds:    ch.ScanS,
+			Band:           band,
 		})
 	}
 	if len(channels) == 0 {

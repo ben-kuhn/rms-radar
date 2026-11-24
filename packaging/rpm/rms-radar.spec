@@ -10,7 +10,7 @@
 # local build provides it.
 
 Name:           rms-radar
-Version:        1.0.14
+Version:        1.0.15
 Release:        1%{?dist}
 Summary:        Winlink RMS gateway map with service-code filtering and propagation ranking
 
@@ -75,6 +75,8 @@ install -Dm644 contrib/desktop/rms-radar-1024.png %{buildroot}%{_datadir}/icons/
 %systemd_postun rms-radar.service
 
 %changelog
+* Tue Nov 24 2026 RMS Radar contributors - 1.0.15-1
+- Disable center frequency for RadioPost, which publishes dial only
 * Tue Nov 24 2026 RMS Radar contributors - 1.0.14-1
 - Call the selector Service, restore RadioPost rank/conditions, and use plain modem labels
 * Tue Nov 24 2026 RMS Radar contributors - 1.0.13-1
