@@ -1,15 +1,17 @@
 # RMS Radar
 
-**A free, open-source map of Winlink RMS gateways.**
+**A free, open-source map of Winlink and RadioPost gateways.**
 
-RMS Radar shows the Winlink gateways near you on a map, lets you filter by the
+RMS Radar shows Winlink gateways near you on a map, lets you filter by the
 service codes you care about, and ranks them by how likely you are to reach
-them. It runs as a normal desktop app on macOS, Windows, and Linux — no server
+them. It can also load the separate RadioPost directory from the same Source
+selector. It runs as a normal desktop app on macOS, Windows, and Linux — no server
 or command line required — and can also be self-hosted for a club or network.
 
 > **Unofficial.** RMS Radar is not affiliated with the Winlink Development Team
-> or ARSFI. Gateway data comes from Winlink's public API. The official list and
-> map are at [winlink.org/RMSChannels](https://winlink.org/RMSChannels).
+> or ARSFI. Winlink data comes from Winlink's public API; RadioPost data comes
+> from [radiopost.org](https://radiopost.org/). The official Winlink list and map
+> are at [winlink.org/RMSChannels](https://winlink.org/RMSChannels).
 
 **Website:** [ben-kuhn.github.io/rms-radar](https://ben-kuhn.github.io/rms-radar/) ·
 **Live map:** [rmsradar.ku0hn.radio](https://rmsradar.ku0hn.radio)

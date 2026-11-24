@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="dark light">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
-<title>RMS Radar — Winlink gateway map</title>
+<title>RMS Radar — Winlink and RadioPost gateway map</title>
 <script src="theme.js"></script>
 <link rel="stylesheet" href="vendor/leaflet/leaflet.css">
 <link rel="stylesheet" href="style.css">
@@ -14,9 +14,10 @@
 <section class="notice" id="notice" role="note" hidden>
   <div class="notice-body">
     <span class="notice-lead">Unofficial map.</span>
-    RMS Radar is not affiliated with the Winlink Development Team or ARSFI. Gateway and
-    status data come from Winlink's public API; for the official list see
-    <a href="https://winlink.org/RMSChannels" target="_blank" rel="noopener noreferrer">winlink.org</a>.
+    RMS Radar is not affiliated with the Winlink Development Team or ARSFI. Winlink
+    gateway and status data come from Winlink's public API; for the official list
+    see <a href="https://winlink.org/RMSChannels" target="_blank" rel="noopener noreferrer">winlink.org</a>.
+    RadioPost data come from the <a href="https://radiopost.org/" target="_blank" rel="noopener noreferrer">RadioPost directory</a>.
     Winlink advertises community modems under their underlying protocols (VARA, ARDOP, Packet, …)
     and identifies them only by <b>service code</b>, so this map makes those
     gateways discoverable and rankable by service code, band, and mode. See the
@@ -49,7 +50,7 @@
       <input id="grid" maxlength="6" placeholder="EM38xx" autocomplete="off" spellcheck="false">
     </label>
     <button id="rank-btn" class="btn btn-primary winlink-only" title="Rank stations by predicted link success">Rank</button>
-    <button id="refresh-btn" class="btn" title="Fetch the latest Winlink gateway list (at most once every five minutes)">Refresh</button>
+    <button id="refresh-btn" class="btn" title="Fetch the latest source data">Refresh</button>
     <button id="theme-btn" class="btn btn-icon" title="Toggle dark/light" aria-label="Toggle theme">◐</button>
     <div class="field">
       <span>Frequency</span>

@@ -88,7 +88,7 @@ func main() {
 		log.Fatal("webview: failed to create a window (is WebView2/WebKitGTK installed?)")
 	}
 	defer w.Destroy()
-	w.SetTitle("Winlink Gateway Map")
+	w.SetTitle("RMS Radar — Winlink and RadioPost Gateway Map")
 	w.SetSize(1200, 820, webview.HintNone)
 	w.Navigate(a.URL())
 	log.Printf("window: %s", a.URL())
