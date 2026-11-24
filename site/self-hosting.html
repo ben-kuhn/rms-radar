@@ -76,7 +76,8 @@ curl -fsS http://127.0.0.1:8079/api/health</code></pre>
     <tbody>
       <tr><td><code>RMSRADAR_SERVICE_CODES</code></td><td><code>PUBLIC,MERCURY,VARDEFM,MODEM73,DATA2G,IONHF,XARA,AETHER</code></td><td>Codes to fetch (no wildcard).</td></tr>
       <tr><td><code>RMSRADAR_ADMIN_TOKEN</code></td><td>unset</td><td>Enables service-code editing; required in the <code>X-RMS-Radar-Admin</code> header.</td></tr>
-      <tr><td><code>RMSRADAR_REFRESH</code></td><td><code>24h</code></td><td>Automatic refresh interval.</td></tr>
+      <tr><td><code>RMSRADAR_REFRESH</code></td><td><code>24h</code></td><td>Winlink gateway refresh interval.</td></tr>
+      <tr><td><code>RMSRADAR_RADIOPOST_REFRESH</code></td><td><code>10m</code></td><td>RadioPost directory/status poll interval (minimum 1m).</td></tr>
       <tr><td><code>RMSRADAR_CACHE_DIR</code></td><td><code>/data</code></td><td>Gateway cache, tiles, conditions, and service-code selection.</td></tr>
       <tr><td><code>RMSRADAR_LISTEN</code></td><td><code>0.0.0.0:8079</code></td><td>Container-internal listen address.</td></tr>
       <tr><td><code>RMSRADAR_VOACAP_EXECUTABLE</code></td><td><code>/usr/bin/voacapl</code></td><td>VOACAP engine included in the image.</td></tr>
@@ -160,8 +161,9 @@ sudo systemctl enable --now rms-radar</code></pre>
     <thead><tr><th>Flag / env</th><th>Default</th><th>Notes</th></tr></thead>
     <tbody>
       <tr><td><code>-listen</code> / <code>RMSRADAR_LISTEN</code></td><td><code>127.0.0.1:8079</code></td><td>Use <code>0.0.0.0:8079</code> only behind a trusted proxy/firewall.</td></tr>
-      <tr><td><code>-service-codes</code> / <code>RMSRADAR_SERVICE_CODES</code></td><td>the seven known codes</td><td>Winlink accepts explicit codes only.</td></tr>
-      <tr><td><code>-refresh</code> / <code>RMSRADAR_REFRESH</code></td><td><code>24h</code></td><td>The UI Refresh button is rate-limited to once every five minutes.</td></tr>
+      <tr><td><code>-service-codes</code> / <code>RMSRADAR_SERVICE_CODES</code></td><td>the eight known codes</td><td>Winlink accepts explicit codes only.</td></tr>
+      <tr><td><code>-refresh</code> / <code>RMSRADAR_REFRESH</code></td><td><code>24h</code></td><td>Winlink refresh interval; the UI Refresh button is rate-limited to once every five minutes.</td></tr>
+      <tr><td><code>-radiopost-refresh</code> / <code>RMSRADAR_RADIOPOST_REFRESH</code></td><td><code>10m</code></td><td>RadioPost directory/status poll interval (minimum 1m).</td></tr>
       <tr><td><code>-cache-dir</code> / <code>RMSRADAR_CACHE_DIR</code></td><td><code>./data</code></td><td>Gateway cache, tiles, conditions, and the saved service-code selection.</td></tr>
       <tr><td><code>-admin-token</code> / <code>RMSRADAR_ADMIN_TOKEN</code></td><td>unset</td><td>Enables service-code changes on servers.</td></tr>
       <tr><td><code>-voacap-url</code> / <code>RMSRADAR_VOACAP_URL</code></td><td>unset</td><td>Use a remote VOACAP-compatible API instead of a local engine.</td></tr>
@@ -180,7 +182,7 @@ sudo systemctl enable --now rms-radar</code></pre>
   </ul>
 
   <h2>API and live reference</h2>
-  <p>The running instance exposes <code>/api/health</code>, <code>/api/gateways</code>, <code>/api/servicecodes</code>, <code>/api/conditions</code>, <code>POST /api/rank</code>, <code>POST /api/refresh</code>, and <code>GET /api/config</code>. The <a href="https://rmsradar.ku0hn.radio">public live map</a> is available as a reference deployment.</p>
+  <p>The running instance exposes <code>/api/health</code>, <code>/api/gateways</code>, <code>/api/servicecodes</code>, <code>/api/conditions</code>, <code>POST /api/rank</code>, <code>POST /api/refresh</code>, <code>GET /api/config</code>, <code>GET /api/radiopost/gateways</code>, and <code>POST /api/radiopost/refresh</code>. The <a href="https://rmsradar.ku0hn.radio">public live map</a> is available as a reference deployment.</p>
 
   <p class="note" style="margin-top:30px">RMS Radar is unofficial and is not affiliated with the Winlink Development Team or ARSFI. Winlink and the Winlink logo are trademarks of their respective owners.</p>
 </main>
