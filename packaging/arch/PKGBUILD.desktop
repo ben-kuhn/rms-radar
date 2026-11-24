@@ -9,7 +9,7 @@
 # PKGBUILD only packages it.
 
 pkgname=rms-radar-desktop
-pkgver=1.0.15
+pkgver=1.0.16
 pkgrel=1
 pkgdesc="Native desktop client for the RMS Radar Winlink gateway map"
 arch=('x86_64')

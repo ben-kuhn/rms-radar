@@ -67,8 +67,8 @@ func TestNormalize(t *testing.T) {
 	if st.Channels[0].FrequencyHz != 7101000 || st.Channels[0].Frequency != "7.101 MHz" {
 		t.Errorf("frequency = %v %q", st.Channels[0].FrequencyHz, st.Channels[0].Frequency)
 	}
-	if st.Channels[0].CenterFrequencyHz != 0 || st.Channels[0].CenterFrequency != "" {
-		t.Errorf("RadioPost should not invent a center frequency: %v %q", st.Channels[0].CenterFrequencyHz, st.Channels[0].CenterFrequency)
+	if st.Channels[0].CenterFrequencyHz != 7102500 || st.Channels[0].CenterFrequency != "7.1025 MHz" {
+		t.Errorf("derived center = %v %q, want 7102500 / 7.1025 MHz", st.Channels[0].CenterFrequencyHz, st.Channels[0].CenterFrequency)
 	}
 }
 

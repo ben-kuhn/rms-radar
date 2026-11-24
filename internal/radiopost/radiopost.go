@@ -24,6 +24,7 @@ const (
 
 	DefaultRefreshInterval = 10 * time.Minute
 	MinStatusPollInterval  = time.Minute
+	hfDialOffsetHz         = 1500
 	directoryMaxAge        = 6 * time.Hour
 	maxDocumentBytes       = 4 << 20
 )
@@ -364,15 +365,23 @@ func normalizeGateway(gw gateway, live liveStatus, now time.Time) catalog.Statio
 		if band == "" {
 			band = catalog.BandForFrequency(ch.DialHz)
 		}
+		// RadioPost publishes dial_hz. Derive the USB center the same way
+		// Winlink's center is converted to a dial: 1.5 kHz above the dial on HF.
+		centerHz := ch.DialHz
+		if centerHz > 0 && centerHz < 30e6 {
+			centerHz += hfDialOffsetHz
+		}
 		channels = append(channels, catalog.Channel{
-			Mode:           label,
-			ModeFamily:     label,
-			FrequencyHz:    ch.DialHz,
-			Frequency:      catalog.FormatFrequency(ch.DialHz),
-			Gridsquare:     gw.Grid,
-			OperatingHours: hoursText,
-			ScanSeconds:    ch.ScanS,
-			Band:           band,
+			Mode:              label,
+			ModeFamily:        label,
+			FrequencyHz:       ch.DialHz,
+			Frequency:         catalog.FormatFrequency(ch.DialHz),
+			CenterFrequencyHz: centerHz,
+			CenterFrequency:   catalog.FormatFrequency(centerHz),
+			Gridsquare:        gw.Grid,
+			OperatingHours:    hoursText,
+			ScanSeconds:       ch.ScanS,
+			Band:              band,
 		})
 	}
 	if len(channels) == 0 {

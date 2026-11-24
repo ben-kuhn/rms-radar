@@ -56,7 +56,7 @@ Update with `docker compose pull && docker compose up -d`. The `/data` volume
 holds the gateway cache, tiles, conditions, and the saved service-code
 selection; back it up if you care about offline startup.
 
-**Image tags:** `latest`, `1.0`, `1.0.15`, and `edge` (main). Images are
+**Image tags:** `latest`, `1.0`, `1.0.16`, and `edge` (main). Images are
 multi-arch for linux/amd64 and linux/arm64. The container is also built and
 smoke-tested in CI.
 
@@ -359,13 +359,14 @@ workflow publishes its checksum next to it.
 **Frequency convention:** the `frequency_hz` and `frequency` fields returned by
 `/api/gateways` and `/api/rank` are **radio dial frequencies** and are the
 default UI display. Winlink reports the USB center frequency for HF channels, so
-RMS Radar subtracts 1.5 kHz for those fields. The original center is also
-available as `center_frequency_hz` / `center_frequency`; the UI's **Dial /
-Center** toggle switches between them. VHF/UHF frequencies have no offset. For
-example, Winlink's 7.0425 MHz center is returned as dial **7.041 MHz** and
-center **7.0425 MHz**. HF values retain 100 Hz precision (for example
-**7.1013 MHz**). RadioPost provides only `dial_hz`, so its channels omit the
-center fields and the web UI disables the Center option for that service.
+RMS Radar subtracts 1.5 kHz for those fields. RadioPost reports dial frequencies,
+so RMS Radar adds 1.5 kHz to derive its center. Both are exposed as
+`center_frequency_hz` / `center_frequency`, and the UI's **Dial / Center**
+toggle switches between them. VHF/UHF frequencies have no offset. For example,
+Winlink's 7.0425 MHz center is returned as dial **7.041 MHz** and center
+**7.0425 MHz**; RadioPost's 7.101 MHz dial is returned with center
+**7.1025 MHz**. HF values retain 100 Hz precision (for example
+**7.1013 MHz**).
 
 ## RadioPost service
 
@@ -387,8 +388,8 @@ are skipped. Known modems are shown by their plain names (`Aether`,
 `Aether FM`, `ARDOP`, `AX.25`, `Mercury`, `VARA HF`, `VARA FM`); other
 non-`tcp` names are preserved and shown as reported. `scan_s` is shown on each
 channel when a gateway scans multiple frequencies. RadioPost publishes dial
-frequencies only; it has no center-frequency field, so Center is disabled for
-RadioPost.
+frequencies; RMS Radar derives center frequencies by adding 1.5 kHz on HF, so
+the Dial / Center toggle works for both services.
 
 ## Offline behavior
 
