@@ -56,7 +56,7 @@ Update with `docker compose pull && docker compose up -d`. The `/data` volume
 holds the gateway cache, tiles, conditions, and the saved service-code
 selection; back it up if you care about offline startup.
 
-**Image tags:** `latest`, `1.0`, `1.0.12`, and `edge` (main). Images are
+**Image tags:** `latest`, `1.0`, `1.0.13`, and `edge` (main). Images are
 multi-arch for linux/amd64 and linux/arm64. The container is also built and
 smoke-tested in CI.
 
