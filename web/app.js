@@ -12,6 +12,7 @@ const state = {
   markers: new Map(),    // callsign -> {base, ranked} Leaflet markers
   expanded: new Set(),   // callsigns whose full channel list is shown
   filters: { serviceCode: "", mode: "", band: "" },
+  source: "winlink", // "winlink" or "radiopost"
   theme: "dark",
   frequencyDisplay: "dial", // "dial" or "center"
 };
@@ -24,6 +25,7 @@ const NOTICE_KEY = "rmsradar-notice-v1";
 // Mobile map/list switcher.
 const MOBILE_VIEW_KEY = "rmsradar-mobile-view";
 const FREQUENCY_KEY = "rmsradar-frequency-display";
+const SOURCE_KEY = "rmsradar-source";
 const MOBILE_QUERY = window.matchMedia("(max-width: 720px)");
 
 // Desktop (double-click) mode: main opens /?desktop=<token>.
@@ -41,7 +43,7 @@ const BAND_ORDER = ["160m","80m","60m","40m","30m","20m","17m","15m","12m","10m"
 const VHF_MIN_HZ = 30e6;
 const VHF_BANDS = new Set(["6m", "2m", "1.25m", "70cm", "33cm", "23cm"]);
 const isHfChannel = (c) => !(c.frequency_hz >= VHF_MIN_HZ || VHF_BANDS.has(c.band));
-const MODE_ORDER = ["VARA","VARA FM","Mercury","VardeFM","MODEM73","DATA2G","IONHF","XARA","ARDOP","Packet","PACTOR","Robust Packet","WINMOR","Other"];
+const MODE_ORDER = ["VARA","VARA FM","Mercury","VardeFM","MODEM73","DATA2G","IONHF","XARA","Winlink/Aether","RadioPost/Aether","RadioPost/Aether FM","RadioPost/ARDOP","RadioPost/AX.25","RadioPost/Mercury","RadioPost/VARA HF","RadioPost/VARA FM","ARDOP","Packet","PACTOR","Robust Packet","WINMOR","Other"];
 
 /* ---------- theme ---------- */
 function applyTheme(theme) {
@@ -67,6 +69,29 @@ function applyFrequencyDisplay(mode, rerender = true) {
 function channelFrequency(c) {
   if (state.frequencyDisplay === "center" && c.center_frequency) return c.center_frequency;
   return c.frequency || fmtHz(c.frequency_hz);
+}
+
+function applySource(source, rerender = true) {
+  state.source = source === "radiopost" ? "radiopost" : "winlink";
+  document.documentElement.dataset.source = state.source;
+  const sel = $("source");
+  if (sel) sel.value = state.source;
+  state.filters = { serviceCode: "", mode: "", band: "" };
+  for (const id of ["service-code", "mode", "band"]) {
+    if ($(id)) $(id).value = "";
+  }
+  state.rankSeq++;
+  if (state.rankAbort) {
+    state.rankAbort.abort();
+    state.rankAbort = null;
+  }
+  state.ranked.clear();
+  try { localStorage.setItem(SOURCE_KEY, state.source); } catch (_) {}
+  if (rerender) {
+    load().catch((err) => {
+      $("status").textContent = "failed to load: " + err.message;
+    });
+  }
 }
 
 /* ---------- map ---------- */
@@ -186,22 +211,43 @@ function hoursHTML(c) {
   return `<span class="ch-hours" title="${title}">${esc(label)}</span>`;
 }
 
+function scanHTML(c) {
+  return c.scan_s > 0
+    ? `<span class="ch-scan" title="Seconds a caller must keep calling while this gateway scans">${c.scan_s}s scan</span>`
+    : "";
+}
+
 /* ---------- data ---------- */
 async function load() {
-  const [config, serviceCodes, gateways, conditions] = await Promise.all([
-    fetchJSON("/api/config"),
+  const config = await fetchJSON("/api/config");
+  state.config = config;
+  updateCodesAvailability();
+  updateDocsLinks();
+  applyTileLayer();
+
+  if (state.source === "radiopost") {
+    const gateways = await fetchJSON("/api/radiopost/gateways");
+    state.serviceCodes = [];
+    state.stations = gateways || [];
+    state.conditions = null;
+    state.ranked.clear();
+    $("status").textContent = `${state.stations.length} RadioPost gateways`;
+    populateServiceCodes();
+    populateBandMode();
+    $("conditions").hidden = true;
+    applyFilters();
+    return;
+  }
+
+  const [serviceCodes, gateways, conditions] = await Promise.all([
     fetchJSON("/api/servicecodes"),
     fetchJSON("/api/gateways"),
     fetchJSON("/api/conditions").catch(() => null),
   ]);
-  state.config = config;
   state.serviceCodes = serviceCodes;
   state.stations = gateways || [];
   state.conditions = conditions;
 
-  updateCodesAvailability();
-  updateDocsLinks();
-  applyTileLayer();
   $("status").textContent =
     `${state.stations.length} gateways · ` + (conditions ? "conditions ready" : "no conditions");
   populateServiceCodes();
@@ -344,6 +390,7 @@ function popupHTML(st, rank) {
     `<div class="ch-row${rank && isRankedChannel(c, rank) ? " ch-best" : ""}"><span class="ch-mode"${modeTitle(c)}>${esc(c.mode)}</span>` +
     `<span class="ch-freq">${esc(channelFrequency(c))}</span>` +
     hoursHTML(c) +
+    scanHTML(c) +
     `<span class="ch-sc">${esc(c.service_code || "PUBLIC")}</span></div>`).join("");
   const rankLine = rank
     ? `<div><b>Link quality:</b> ${rank.link_quality}% · <span class="best-band">${esc(rank.band)} ${esc(rank.mode)}</span> · ${rank.distance_km.toFixed(0)} km · ${rank.band_open ? "open" : "closed"}` +
@@ -421,7 +468,7 @@ function renderList(stations) {
         (r ? ` · ${r.distance_km.toFixed(0)} km` : "") +
         (r && r.note ? ` · ${esc(r.note)}` : "") + `</div>` +
       `<div class="station-channels">${shown.map((c) =>
-        `<div class="ch-row${r && isRankedChannel(c, r) ? " ch-best" : ""}"><span class="ch-mode"${modeTitle(c)}>${esc(c.mode)}</span><span class="ch-freq">${esc(channelFrequency(c))}</span>${hoursHTML(c)}<span class="ch-sc">${esc(c.service_code || "PUBLIC")}</span></div>`).join("")}` +
+        `<div class="ch-row${r && isRankedChannel(c, r) ? " ch-best" : ""}"><span class="ch-mode"${modeTitle(c)}>${esc(c.mode)}</span><span class="ch-freq">${esc(channelFrequency(c))}</span>${hoursHTML(c)}${scanHTML(c)}<span class="ch-sc">${esc(c.service_code || "PUBLIC")}</span></div>`).join("")}` +
         (chans.length > 4
           ? `<button type="button" class="more-ch">${expanded ? "Show less" : `+${chans.length - 4} more`}</button>`
           : "") +
@@ -535,8 +582,18 @@ function renderConditions() {
 async function refreshGateways() {
   const btn = $("refresh-btn");
   if (btn) btn.disabled = true;
-  setNote("Refreshing gateway list…");
+  setNote(state.source === "radiopost" ? "Refreshing RadioPost directory…" : "Refreshing gateway list…");
   try {
+    if (state.source === "radiopost") {
+      await fetchJSON("/api/radiopost/refresh", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: "{}",
+      });
+      setNote("RadioPost directory refreshed.");
+      await load();
+      return;
+    }
     const res = await fetchJSON("/api/refresh", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -795,6 +852,7 @@ function initCodesDialog() {
 
 /* ---------- events ---------- */
 function wireEvents() {
+  $("source").addEventListener("change", (e) => applySource(e.target.value));
   $("service-code").addEventListener("change", (e) => {
     state.filters.serviceCode = e.target.value;
     clearRank();
@@ -821,6 +879,9 @@ function wireEvents() {
   let frequencyDisplay = "dial";
   try { frequencyDisplay = localStorage.getItem(FREQUENCY_KEY) || "dial"; } catch (_) {}
   applyFrequencyDisplay(frequencyDisplay, false);
+  let source = "winlink";
+  try { source = localStorage.getItem(SOURCE_KEY) || "winlink"; } catch (_) {}
+  applySource(source, false);
   initNotice();
   initMap();
   initMobileTabs();

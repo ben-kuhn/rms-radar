@@ -42,6 +42,7 @@
       <tr><td><code>DATA2G</code></td><td>DATA2G community VARA modems. Winlink advertises these channels as <code>VARA</code> at 500 or 2400 Hz; this map labels them <strong>DATA2G</strong> without a width.</td></tr>
       <tr><td><code>IONHF</code></td><td>IONHF community modems. Winlink advertises these channels as <code>ARDOP</code>; this map labels them <strong>IONHF</strong>.</td></tr>
       <tr><td><code>XARA</code></td><td>XARA community modems. Winlink advertises these channels as <code>VARA</code>; this map labels them <strong>XARA</strong>. See <a href="https://github.com/NR5P/xara/releases" target="_blank" rel="noopener noreferrer">XARA releases</a>.</td></tr>
+      <tr><td><code>AETHER</code></td><td>Aether community modems. Winlink advertises these channels as <code>VARA HF</code>; this map labels them <strong>Winlink/Aether</strong>.</td></tr>
       <tr><td><em>other</em></td><td>Other community projects or private group codes. Add the code in your client; the Winlink team does not publish private codes.</td></tr>
     </tbody>
   </table>
@@ -53,7 +54,7 @@
   <h2>Winlink Express <span class="doc-os">Windows</span></h2>
   <ol>
     <li>Open <strong>Settings → Winlink Express Setup</strong>.</li>
-    <li>In the <strong>Service Codes</strong> field, enter the codes separated by spaces — for example <code>PUBLIC</code>, or <code>PUBLIC MERCURY VARDEFM MODEM73 DATA2G IONHF XARA</code>.</li>
+    <li>In the <strong>Service Codes</strong> field, enter the codes separated by spaces — for example <code>PUBLIC</code>, or <code>PUBLIC MERCURY VARDEFM MODEM73 DATA2G IONHF XARA AETHER</code>.</li>
     <li>Click <strong>Update</strong>.</li>
     <li>Update the channel list. Winlink Express notes that changing service codes requires updating the list of channels.</li>
   </ol>
@@ -67,7 +68,7 @@
   <ol>
     <li>Run <code>pat configure</code> (or edit the configuration file it opens).</li>
     <li>Set the <code>service_codes</code> array, for example:
-      <pre><code>"service_codes": ["PUBLIC", "MERCURY", "VARDEFM", "MODEM73", "DATA2G", "IONHF", "XARA"]</code></pre>
+      <pre><code>"service_codes": ["PUBLIC", "MERCURY", "VARDEFM", "MODEM73", "DATA2G", "IONHF", "XARA", "AETHER"]</code></pre>
     </li>
     <li>Save and restart PAT. <code>pat rmslist</code> uses these codes.</li>
   </ol>
@@ -81,7 +82,7 @@
   <ol>
     <li>Open a session's <strong>RMS Channel Selection</strong> screen: edit a session → <strong>Destination address → RMS Channel Selection…</strong>.</li>
     <li>In the lower menu, choose <strong>Service Codes</strong>.</li>
-    <li>Enter one code per line, or separate them with spaces — for example <code>PUBLIC MERCURY VARDEFM MODEM73 DATA2G IONHF XARA</code>.</li>
+    <li>Enter one code per line, or separate them with spaces — for example <code>PUBLIC MERCURY VARDEFM MODEM73 DATA2G IONHF XARA AETHER</code>.</li>
     <li>Go back and choose <strong>Update via internet</strong> so the channel list reflects the new codes.</li>
   </ol>
   <p class="doc-more">
@@ -93,7 +94,7 @@
   <h2>RadioMail <span class="doc-os">iPhone · iPad · Apple silicon Mac</span></h2>
   <ol>
     <li>Open <strong>Settings → Stations → Directory</strong>.</li>
-    <li>Under <strong>Service codes</strong>, list the additional codes you want, for example <code>MERCURY, VARDEFM, MODEM73, DATA2G, IONHF, XARA</code>.</li>
+    <li>Under <strong>Service codes</strong>, list the additional codes you want, for example <code>MERCURY, VARDEFM, MODEM73, DATA2G, IONHF, XARA, AETHER</code>.</li>
     <li>Non-public codes appear as a small label on directory rows and in the session picker.</li>
   </ol>
   <p class="doc-more">
@@ -127,9 +128,15 @@
     frequency if needed.
   </p>
   <p>
+    <strong>RadioPost is separate.</strong> Use the map's <strong>Source</strong>
+    selector to switch to RadioPost. RadioPost gateways do not use Winlink
+    service codes; the map labels them <code>RadioPost/Aether</code>,
+    <code>RadioPost/VARA HF</code>, and so on.
+  </p>
+  <p>
     This map is unofficial and not affiliated with the Winlink Development Team or
     ARSFI. It fetches <code>PUBLIC</code>, <code>MERCURY</code>, <code>VARDEFM</code>,
-    <code>MODEM73</code>, <code>DATA2G</code>, <code>IONHF</code>, and <code>XARA</code> from Winlink's public gateway API by default; the
+    <code>MODEM73</code>, <code>DATA2G</code>, <code>IONHF</code>, <code>XARA</code>, and <code>AETHER</code> from Winlink's public gateway API by default; the
     service-code dropdown shows the codes present in the returned data. The official
     gateway list and map are at
     <a href="https://winlink.org/RMSChannels" target="_blank" rel="noopener noreferrer">winlink.org/RMSChannels</a>.

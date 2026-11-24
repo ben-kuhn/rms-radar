@@ -28,7 +28,7 @@ services:
       - rms-radar-data:/data
     environment:
       TZ: UTC
-      RMSRADAR_SERVICE_CODES: "PUBLIC,MERCURY,VARDEFM,MODEM73,DATA2G,IONHF,XARA"
+      RMSRADAR_SERVICE_CODES: "PUBLIC,MERCURY,VARDEFM,MODEM73,DATA2G,IONHF,XARA,AETHER"
     read_only: true
     tmpfs:
       - /tmp:size=64m
@@ -56,7 +56,7 @@ Update with `docker compose pull && docker compose up -d`. The `/data` volume
 holds the gateway cache, tiles, conditions, and the saved service-code
 selection; back it up if you care about offline startup.
 
-**Image tags:** `latest`, `1.0`, `1.0.11`, and `edge` (main). Images are
+**Image tags:** `latest`, `1.0`, `1.0.12`, and `edge` (main). Images are
 multi-arch for linux/amd64 and linux/arm64. The container is also built and
 smoke-tested in CI.
 
@@ -92,7 +92,7 @@ services.rms-radar = {
   enable = true;
   listenAddress = "0.0.0.0";
   port = 8079;
-  serviceCodes = [ "PUBLIC" "MERCURY" "VARDEFM" "MODEM73" "DATA2G" "IONHF" "XARA" ];
+  serviceCodes = [ "PUBLIC" "MERCURY" "VARDEFM" "MODEM73" "DATA2G" "IONHF" "XARA" "AETHER" ];
 };
 ```
 
@@ -144,8 +144,9 @@ endpoints are token-guarded and disabled in `-d` service mode.
 | Flag | Env | Default | Description |
 |------|-----|---------|-------------|
 | `-listen` | `RMSRADAR_LISTEN` | `127.0.0.1:8079` | HTTP listen address (use `0.0.0.0:8079` to serve the LAN) |
-| `-service-codes` | `RMSRADAR_SERVICE_CODES` | `PUBLIC,MERCURY,VARDEFM,MODEM73,DATA2G,IONHF,XARA` | Comma-separated service codes to fetch (no wildcard) |
-| `-refresh` | `RMSRADAR_REFRESH` | `24h` | Gateway list refresh interval; the UI **Refresh** button forces an update (five-minute cooldown) |
+| `-service-codes` | `RMSRADAR_SERVICE_CODES` | `PUBLIC,MERCURY,VARDEFM,MODEM73,DATA2G,IONHF,XARA,AETHER` | Comma-separated service codes to fetch (no wildcard) |
+| `-refresh` | `RMSRADAR_REFRESH` | `24h` | Winlink gateway list refresh interval; the UI **Refresh** button forces an update (five-minute cooldown) |
+| `-radiopost-refresh` | `RMSRADAR_RADIOPOST_REFRESH` | `10m` | RadioPost directory/status poll interval (minimum 1m; default 10m) |
 | `-cache-dir` | `RMSRADAR_CACHE_DIR` | `./data` | Cache directory |
 | `-key` | `RMSRADAR_KEY` | Pat's community key | Winlink CMS access key |
 | `-admin-token` | `RMSRADAR_ADMIN_TOKEN` | *(empty)* | Enables service-code changes and requires this value in the `X-RMS-Radar-Admin` header |
@@ -174,8 +175,8 @@ The service-code dropdown is built from the codes present in the fetched data,
 and the mode dropdown shows the modes those channels advertise. Community-modem
 codes are labelled with the service name: `MERCURY` → **Mercury**, `VARDEFM` →
 **VardeFM**, `MODEM73` → **MODEM73**, `DATA2G` → **DATA2G**, `IONHF` →
-**IONHF**, and `XARA` → **XARA**, even though the API advertises them under
-VARA, Packet, or ARDOP.
+**IONHF**, `XARA` → **XARA**, and `AETHER` → **Winlink/Aether**, even though
+the API advertises them under VARA, Packet, or ARDOP.
 
 Dedicated project modems show only the service code. Their reported bandwidth is
 omitted because it varies by channel and configuration: `DATA2G` uses 500 or
@@ -198,6 +199,7 @@ known community codes:
 | `DATA2G` | DATA2G gateways (community; variable VARA bandwidth) |
 | `IONHF` | IONHF gateways (community; ARDOP-based) |
 | `XARA` | XARA gateways (community) |
+| `AETHER` | Aether gateways (community; labelled Winlink/Aether) |
 | *other* | any community or private group code |
 
 The list is **runtime-configurable** — in the native and browser desktop apps,
@@ -351,6 +353,8 @@ workflow publishes its checksum next to it.
 | `GET /api/config` | Service codes, version, VOACAP status, tile URL, editing flag |
 | `POST /api/refresh` | Force a gateway refresh (same-origin JSON; five-minute cooldown) |
 | `POST /api/servicecodes/config` | Change the fetched codes (desktop same-origin, or `X-RMS-Radar-Admin` on a server) |
+| `GET /api/radiopost/gateways` | Normalized RadioPost stations from the separate RadioPost source |
+| `POST /api/radiopost/refresh` | Force a RadioPost directory/status refresh (same-origin JSON; status poll floor 1m) |
 
 **Frequency convention:** the `frequency_hz` and `frequency` fields returned by
 `/api/gateways` and `/api/rank` are **radio dial frequencies** and are the
@@ -361,6 +365,28 @@ Center** toggle switches between them. VHF/UHF frequencies have no offset. For
 example, Winlink's 7.0425 MHz center is returned as dial **7.041 MHz** and
 center **7.0425 MHz**. HF values retain 100 Hz precision (for example
 **7.1013 MHz**).
+
+## RadioPost source
+
+RadioPost is a separate gateway network, not a Winlink service code. The web UI
+has a **Source** selector: **Winlink** is the default, and **RadioPost** loads
+the RadioPost directory instead. RadioPost does not use Winlink service codes,
+so the service-code filter and editor are hidden for that source.
+
+The server reads:
+
+- `https://radiopost.org/data/directory.json` for the signed gateway lists.
+- Each post office's status JWS at `<api>/gateways/status`, with the default
+  source at `https://po.radiopost.org/rp/v1/gateways/status`.
+
+The directory is cached for up to six hours. Status is polled once per
+`-radiopost-refresh` interval (default **10m**), with a hard minimum of **1m** as
+required by RadioPost. Gateways marked `test: true` and channels using `tcp` or
+unknown modem names are skipped. Known modems are labelled
+`RadioPost/Aether`, `RadioPost/Aether FM`, `RadioPost/ARDOP`,
+`RadioPost/AX.25`, `RadioPost/Mercury`, `RadioPost/VARA HF`, and
+`RadioPost/VARA FM`. `scan_s` is shown on each channel when a gateway scans
+multiple frequencies.
 
 ## Offline behavior
 

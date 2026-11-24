@@ -29,7 +29,7 @@ func main() {
 	)
 	debug := flag.Bool("debug", envBool("RMSRADAR_DEBUG", false), "enable the webview developer tools")
 	flag.Parse()
-	addr, serviceCodes, refresh, cacheDir := cf.Listen, cf.ServiceCodes, cf.Refresh, cf.CacheDir
+	addr, serviceCodes, refresh, radioPostRefresh, cacheDir := cf.Listen, cf.ServiceCodes, cf.Refresh, cf.RadioPostRefresh, cf.CacheDir
 	accessKey, historyHours := cf.AccessKey, cf.HistoryHours
 	voacapURL, voacapExec, voacapData := cf.VOACAPURL, cf.VOACAPExecutable, cf.VOACAPDataDir
 	voacapDlURL, voacapDlDir, voacapDlSum := cf.VOACAPDownloadURL, cf.VOACAPDownloadDir, cf.VOACAPDownloadSHA256
@@ -67,6 +67,7 @@ func main() {
 		CacheDir:          *cacheDir,
 		AccessKey:         *accessKey,
 		Refresh:           *refresh,
+		RadioPostRefresh:  *radioPostRefresh,
 		VOACAPURL:         *voacapURL,
 		VOACAPExecutable:  *voacapExec,
 		VOACAPDataDir:     *voacapData,

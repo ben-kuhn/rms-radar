@@ -29,7 +29,7 @@ func main() {
 	daemonLong := flag.Bool("daemon", envBool("RMSRADAR_DAEMON", false), "run as a background service (alias for -d)")
 	openBrowser := flag.Bool("open-browser", envBool("RMSRADAR_OPEN_BROWSER", true), "open the web UI in the default browser on start")
 	flag.Parse()
-	addr, serviceCodes, refresh, cacheDir := cf.Listen, cf.ServiceCodes, cf.Refresh, cf.CacheDir
+	addr, serviceCodes, refresh, radioPostRefresh, cacheDir := cf.Listen, cf.ServiceCodes, cf.Refresh, cf.RadioPostRefresh, cf.CacheDir
 	accessKey, historyHours := cf.AccessKey, cf.HistoryHours
 	voacapURL, voacapExec, voacapData := cf.VOACAPURL, cf.VOACAPExecutable, cf.VOACAPDataDir
 	voacapDlURL, voacapDlDir, voacapDlSum := cf.VOACAPDownloadURL, cf.VOACAPDownloadDir, cf.VOACAPDownloadSHA256
@@ -71,6 +71,7 @@ func main() {
 		CacheDir:          *cacheDir,
 		AccessKey:         *accessKey,
 		Refresh:           *refresh,
+		RadioPostRefresh:  *radioPostRefresh,
 		VOACAPURL:         *voacapURL,
 		VOACAPExecutable:  *voacapExec,
 		VOACAPDataDir:     *voacapData,

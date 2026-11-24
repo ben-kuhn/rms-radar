@@ -160,6 +160,10 @@ select, input {
 }
 select:focus, input:focus { outline: none; border-color: var(--accent); }
 
+/* RadioPost is a separate source: hide Winlink-only controls/data. */
+[data-source="radiopost"] .winlink-only { display: none !important; }
+[data-source="radiopost"] .ch-sc { display: none !important; }
+
 /* Frequency dial/center radio group */
 .segmented {
   display: inline-flex;
@@ -304,6 +308,7 @@ select:focus, input:focus { outline: none; border-color: var(--accent); }
 .ch-mode { font-weight: 600; }
 .ch-freq { color: var(--text-dim); font-variant-numeric: tabular-nums; }
 .ch-hours { color: var(--text-dim); font-size: 11px; }
+.ch-scan { color: var(--text-dim); font-size: 11px; }
 .ch-sc { color: var(--text-dim); font-size: 11px; }
 .best-band { color: var(--accent); font-weight: 600; }
 .ch-row.ch-best { background: var(--accent-soft); border-radius: 3px; padding: 1px 4px; margin: 0 -4px; }

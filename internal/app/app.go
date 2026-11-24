@@ -22,6 +22,7 @@ import (
 	"github.com/ben-kuhn/rms-radar/internal/atomicfile"
 	"github.com/ben-kuhn/rms-radar/internal/cmsapi"
 	"github.com/ben-kuhn/rms-radar/internal/propagation"
+	"github.com/ben-kuhn/rms-radar/internal/radiopost"
 	"github.com/ben-kuhn/rms-radar/internal/server"
 )
 
@@ -34,6 +35,7 @@ type Config struct {
 	CacheDir          string
 	AccessKey         string
 	Refresh           time.Duration
+	RadioPostRefresh  time.Duration
 	VOACAPURL         string
 	VOACAPExecutable  string
 	VOACAPDataDir     string
@@ -56,13 +58,14 @@ type Config struct {
 
 // App is a running instance.
 type App struct {
-	loader *cmsapi.Loader
-	heur   *propagation.Heuristic
-	srv    *server.Server
-	http   *http.Server
-	ln     net.Listener
-	cancel context.CancelFunc
-	done   chan struct{}
+	loader    *cmsapi.Loader
+	radiopost *radiopost.Loader
+	heur      *propagation.Heuristic
+	srv       *server.Server
+	http      *http.Server
+	ln        net.Listener
+	cancel    context.CancelFunc
+	done      chan struct{}
 }
 
 // Start builds the catalog, seeds it from cache/embedded data, starts the
@@ -89,6 +92,7 @@ func Start(parent context.Context, cfg Config) (*App, error) {
 	}
 	codes := serviceCodesFromDisk(serviceCodesPath, seedCodes)
 	a.loader = cmsapi.NewLoader(cfg.CacheDir, codes, cfg.HistoryHours, cfg.AccessKey)
+	a.radiopost = radiopost.NewLoader(cfg.RadioPostRefresh)
 	a.heur = propagation.NewHeuristic(cfg.CacheDir)
 	a.srv = server.New(server.Config{
 		Version:           cfg.Version,
@@ -99,6 +103,7 @@ func Start(parent context.Context, cfg Config) (*App, error) {
 		TileCacheDir:      tileCache,
 		TileCacheMaxBytes: cfg.TileCacheMaxBytes,
 		VHFMaxRangeKm:     cfg.VHFMaxRangeKm,
+		RadioPost:         a.radiopost,
 		ServiceCodesPath:  serviceCodesPath,
 		AdminToken:        cfg.AdminToken,
 		DesktopMode:       cfg.DesktopMode,
@@ -112,6 +117,7 @@ func Start(parent context.Context, cfg Config) (*App, error) {
 	if err := a.srv.Refresh(ctx); err != nil {
 		log.Printf("warning: parse gateways: %v", err)
 	}
+	go a.radiopost.Run(ctx)
 
 	go func() {
 		a.heur.RefreshConditions(ctx)

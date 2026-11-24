@@ -20,6 +20,7 @@ var CommunityModems = map[string]string{
 	"DATA2G":  "DATA2G",
 	"IONHF":   "IONHF",
 	"XARA":    "XARA",
+	"AETHER":  "Winlink/Aether",
 }
 
 // dedicatedModemCodes are service codes whose whole purpose is the modem
@@ -32,6 +33,7 @@ var dedicatedModemCodes = map[string]bool{
 	"DATA2G":  true,
 	"IONHF":   true,
 	"XARA":    true,
+	"AETHER":  true,
 }
 
 // Channel is a normalized, display-ready channel. Mode is the label to show;
@@ -50,6 +52,7 @@ type Channel struct {
 	Gridsquare        string  `json:"gridsquare"`
 	OperatingHours    string  `json:"operating_hours"`
 	Baud              string  `json:"baud,omitempty"`
+	ScanSeconds       int     `json:"scan_s,omitempty"`
 	RadioRange        string  `json:"radio_range,omitempty"`
 	Antenna           string  `json:"antenna,omitempty"`
 	Band              string  `json:"band"`
@@ -186,6 +189,8 @@ func modeFamily(mode string) string {
 		return "IONHF"
 	case strings.HasPrefix(m, "XARA"):
 		return "XARA"
+	case strings.HasPrefix(m, "WINLINK/AETHER"):
+		return "Winlink/Aether"
 	case strings.HasPrefix(m, "ARDOP"):
 		return "ARDOP"
 	case strings.HasPrefix(m, "PACKET"):
@@ -199,6 +204,12 @@ func modeFamily(mode string) string {
 	default:
 		return "Other"
 	}
+}
+
+// FormatFrequency returns a human-readable frequency with enough precision to
+// tune a radio (100 Hz for MHz-range values).
+func FormatFrequency(hz float64) string {
+	return formatFrequency(hz)
 }
 
 func formatFrequency(hz float64) string {
@@ -225,6 +236,11 @@ func trimZeros(s string) string {
 }
 
 // bandForFrequency maps a frequency in Hz to an amateur band name.
+// BandForFrequency returns the amateur band name for a frequency.
+func BandForFrequency(hz float64) string {
+	return bandForFrequency(hz)
+}
+
 func bandForFrequency(hz float64) string {
 	mhz := hz / 1e6
 	switch {

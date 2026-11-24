@@ -15,7 +15,8 @@ services:
       - rms-radar-data:/data
     environment:
       TZ: UTC
-      RMSRADAR_SERVICE_CODES: "PUBLIC,MERCURY,VARDEFM,MODEM73,DATA2G,IONHF,XARA"
+      RMSRADAR_SERVICE_CODES: "PUBLIC,MERCURY,VARDEFM,MODEM73,DATA2G,IONHF,XARA,AETHER"
+      RMSRADAR_RADIOPOST_REFRESH: "10m"
       # Optional: enables service-code editing from the web UI when entered
       # in the dialog. Leave unset to keep the endpoint disabled.
       # RMSRADAR_ADMIN_TOKEN: "change-me"

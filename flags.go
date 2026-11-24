@@ -14,6 +14,7 @@ type commonFlags struct {
 	Listen               *string
 	ServiceCodes         *string
 	Refresh              *time.Duration
+	RadioPostRefresh     *time.Duration
 	CacheDir             *string
 	AccessKey            *string
 	HistoryHours         *int
@@ -33,12 +34,13 @@ type commonFlags struct {
 
 func registerCommonFlags(listenDefault, cacheDefault, listenHelp, cacheHelp string, autoDefault bool) *commonFlags {
 	return &commonFlags{
-		Listen:       flag.String("listen", envOr("RMSRADAR_LISTEN", listenDefault), listenHelp),
-		ServiceCodes: flag.String("service-codes", envOr("RMSRADAR_SERVICE_CODES", defaultServiceCodesCSV()), "comma-separated Winlink service codes to fetch (the API accepts explicit codes; there is no wildcard)"),
-		Refresh:      flag.Duration("refresh", envDuration("RMSRADAR_REFRESH", 24*time.Hour), "gateway list refresh interval (daily by default; the UI Refresh button forces an update)"),
-		CacheDir:     flag.String("cache-dir", envOr("RMSRADAR_CACHE_DIR", cacheDefault), cacheHelp),
-		AccessKey:    flag.String("key", envOr("RMSRADAR_KEY", cmsapiDefaultAccessKey()), "Winlink CMS access key"),
-		HistoryHours: flag.Int("history-hours", envInt("RMSRADAR_HISTORY_HOURS", 48), "hours of channel history to fetch (1-48)"),
+		Listen:           flag.String("listen", envOr("RMSRADAR_LISTEN", listenDefault), listenHelp),
+		ServiceCodes:     flag.String("service-codes", envOr("RMSRADAR_SERVICE_CODES", defaultServiceCodesCSV()), "comma-separated Winlink service codes to fetch (the API accepts explicit codes; there is no wildcard)"),
+		Refresh:          flag.Duration("refresh", envDuration("RMSRADAR_REFRESH", 24*time.Hour), "Winlink gateway list refresh interval (daily by default; the UI Refresh button forces an update)"),
+		RadioPostRefresh: flag.Duration("radiopost-refresh", envDuration("RMSRADAR_RADIOPOST_REFRESH", 10*time.Minute), "RadioPost directory/status poll interval (minimum 1m)"),
+		CacheDir:         flag.String("cache-dir", envOr("RMSRADAR_CACHE_DIR", cacheDefault), cacheHelp),
+		AccessKey:        flag.String("key", envOr("RMSRADAR_KEY", cmsapiDefaultAccessKey()), "Winlink CMS access key"),
+		HistoryHours:     flag.Int("history-hours", envInt("RMSRADAR_HISTORY_HOURS", 48), "hours of channel history to fetch (1-48)"),
 
 		VOACAPURL:            flag.String("voacap-url", envOr("RMSRADAR_VOACAP_URL", ""), "optional remote VOACAP API base URL (enables forecasts when set)"),
 		VOACAPExecutable:     flag.String("voacap-executable", envOr("RMSRADAR_VOACAP_EXECUTABLE", ""), "path to a local voacapl/voacapw binary (enables forecasts)"),

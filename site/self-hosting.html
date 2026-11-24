@@ -52,7 +52,7 @@ services:
       - rms-radar-data:/data
     environment:
       TZ: UTC
-      RMSRADAR_SERVICE_CODES: "PUBLIC,MERCURY,VARDEFM,MODEM73,DATA2G,IONHF,XARA"
+      RMSRADAR_SERVICE_CODES: "PUBLIC,MERCURY,VARDEFM,MODEM73,DATA2G,IONHF,XARA,AETHER"
     read_only: true
     tmpfs:
       - /tmp:size=64m
@@ -74,7 +74,7 @@ curl -fsS http://127.0.0.1:8079/api/health</code></pre>
   <table>
     <thead><tr><th>Variable</th><th>Default</th><th>Purpose</th></tr></thead>
     <tbody>
-      <tr><td><code>RMSRADAR_SERVICE_CODES</code></td><td><code>PUBLIC,MERCURY,VARDEFM,MODEM73,DATA2G,IONHF,XARA</code></td><td>Codes to fetch (no wildcard).</td></tr>
+      <tr><td><code>RMSRADAR_SERVICE_CODES</code></td><td><code>PUBLIC,MERCURY,VARDEFM,MODEM73,DATA2G,IONHF,XARA,AETHER</code></td><td>Codes to fetch (no wildcard).</td></tr>
       <tr><td><code>RMSRADAR_ADMIN_TOKEN</code></td><td>unset</td><td>Enables service-code editing; required in the <code>X-RMS-Radar-Admin</code> header.</td></tr>
       <tr><td><code>RMSRADAR_REFRESH</code></td><td><code>24h</code></td><td>Automatic refresh interval.</td></tr>
       <tr><td><code>RMSRADAR_CACHE_DIR</code></td><td><code>/data</code></td><td>Gateway cache, tiles, conditions, and service-code selection.</td></tr>
@@ -101,13 +101,15 @@ docker run --rm -v rms-radar_rms-radar-data:/data -v "$PWD":/backup \
 
   <p><strong>Frequency display:</strong> channel frequencies default to radio dial frequencies. HF values are shown 1.5 kHz below Winlink's USB center frequency with 100 Hz precision; VHF/UHF values are unchanged. Use the <strong>Dial / Center</strong> toggle to see Winlink's original center frequency.</p>
 
+  <p><strong>RadioPost:</strong> the web UI's <strong>Source</strong> selector loads RadioPost separately from Winlink. RadioPost does not use Winlink service codes, so its service-code controls are hidden. The server polls RadioPost status every 10 minutes by default (<code>RMSRADAR_RADIOPOST_REFRESH</code>, minimum 1m) and caches the directory for six hours.</p>
+
   <h3>Service codes and admin editing</h3>
   <p>Servers do not allow service-code editing by default. To enable it, set an admin token and enter the same token in the UI:</p>
   <pre><code>RMSRADAR_ADMIN_TOKEN=change-me docker compose up -d</code></pre>
   <pre><code>curl -X POST http://127.0.0.1:8079/api/servicecodes/config \
   -H 'Content-Type: application/json' \
   -H 'X-RMS-Radar-Admin: change-me' \
-  -d '{"codes":["PUBLIC","MERCURY","VARDEFM","MODEM73","DATA2G","IONHF","XARA"]}'</code></pre>
+  -d '{"codes":["PUBLIC","MERCURY","VARDEFM","MODEM73","DATA2G","IONHF","XARA","AETHER"]}'</code></pre>
   <p>Winlink does not publish private group codes. Add one only if your group has given it to you.</p>
 
   <h3>VOACAP</h3>
@@ -117,23 +119,23 @@ docker run --rm -v rms-radar_rms-radar-data:/data -v "$PWD":/backup \
   <p>All server packages run the same CGO-free web binary and use a systemd unit with <code>DynamicUser</code>, a <code>StateDirectory</code>, and a read-only system filesystem.</p>
 
   <h3>Debian / Ubuntu</h3>
-  <pre><code>sudo apt install ./rms-radar_1.0.11_amd64.deb
+  <pre><code>sudo apt install ./rms-radar_1.0.12_amd64.deb
 sudo systemctl enable --now rms-radar
 curl -fsS http://127.0.0.1:8079/api/health</code></pre>
   <p>Edit <code>/etc/systemd/system/rms-radar.service.d/override.conf</code> or the packaged unit to change the bind address, service codes, or admin token:</p>
   <pre><code>[Service]
-Environment=RMSRADAR_SERVICE_CODES=PUBLIC,MERCURY,VARDEFM,MODEM73,DATA2G,IONHF,XARA
+Environment=RMSRADAR_SERVICE_CODES=PUBLIC,MERCURY,VARDEFM,MODEM73,DATA2G,IONHF,XARA,AETHER
 Environment=RMSRADAR_ADMIN_TOKEN=change-me
 ExecStart=
 ExecStart=/usr/bin/rms-radar -d -listen 127.0.0.1:8079 -cache-dir /var/lib/rms-radar</code></pre>
 
   <h3>Fedora / RHEL</h3>
-  <pre><code>sudo dnf install ./rms-radar-1.0.11-1.*.rpm
+  <pre><code>sudo dnf install ./rms-radar-1.0.12-1.*.rpm
 sudo systemctl enable --now rms-radar</code></pre>
 
   <h3>Arch Linux</h3>
   <p>Install the released <code>.pkg.tar.zst</code>, or build the <code>PKGBUILD</code> from the repository:</p>
-  <pre><code>sudo pacman -U rms-radar-1.0.11-1-x86_64.pkg.tar.zst
+  <pre><code>sudo pacman -U rms-radar-1.0.12-1-x86_64.pkg.tar.zst
 sudo systemctl enable --now rms-radar</code></pre>
 
   <h3>NixOS</h3>
@@ -142,13 +144,13 @@ sudo systemctl enable --now rms-radar</code></pre>
   enable = true;
   listenAddress = "127.0.0.1";
   port = 8079;
-  serviceCodes = [ "PUBLIC" "MERCURY" "VARDEFM" "MODEM73" "DATA2G" "IONHF" "XARA" ];
+  serviceCodes = [ "PUBLIC" "MERCURY" "VARDEFM" "MODEM73" "DATA2G" "IONHF" "XARA" "AETHER" ];
   voacapl = pkgs.voacapl;
 };</code></pre>
 
   <h3>Standalone binary</h3>
-  <pre><code>tar xzf rms-radar-web-1.0.11-linux-amd64.tar.gz
-./rms-radar-web-1.0.11-linux-amd64 -d \
+  <pre><code>tar xzf rms-radar-web-1.0.12-linux-amd64.tar.gz
+./rms-radar-web-1.0.12-linux-amd64 -d \
   -listen 127.0.0.1:8079 \
   -cache-dir /var/lib/rms-radar</code></pre>
   <p>Use the packaged systemd unit in <code>contrib/systemd/</code> as a starting point, or run the binary under your own service manager.</p>

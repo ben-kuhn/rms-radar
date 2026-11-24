@@ -29,20 +29,26 @@
   <div class="brand">RMS Radar</div>
 
   <div class="controls">
-    <label class="field">Service code
+    <label class="field">Source
+      <select id="source">
+        <option value="winlink">Winlink</option>
+        <option value="radiopost">RadioPost</option>
+      </select>
+    </label>
+    <label class="field winlink-only">Service code
       <select id="service-code"></select>
     </label>
-    <button id="codes-btn" class="btn" title="Add or remove service codes">Service codes…</button>
+    <button id="codes-btn" class="btn winlink-only" title="Add or remove service codes">Service codes…</button>
     <label class="field">Mode
       <select id="mode"></select>
     </label>
     <label class="field">Band
       <select id="band"></select>
     </label>
-    <label class="field">Your grid
+    <label class="field winlink-only">Your grid
       <input id="grid" maxlength="6" placeholder="EM38xx" autocomplete="off" spellcheck="false">
     </label>
-    <button id="rank-btn" class="btn btn-primary" title="Rank stations by predicted link success">Rank</button>
+    <button id="rank-btn" class="btn btn-primary winlink-only" title="Rank stations by predicted link success">Rank</button>
     <button id="refresh-btn" class="btn" title="Fetch the latest Winlink gateway list (at most once every five minutes)">Refresh</button>
     <button id="theme-btn" class="btn btn-icon" title="Toggle dark/light" aria-label="Toggle theme">◐</button>
     <div class="field">
@@ -60,7 +66,7 @@
   <div class="status" id="status">loading…</div>
 </header>
 
-<section class="conditions" id="conditions" hidden>
+<section class="conditions winlink-only" id="conditions" hidden>
   <span class="cond-item">SFI <b id="sfi">–</b></span>
   <span class="cond-item">A <b id="a">–</b></span>
   <span class="cond-item">K <b id="k">–</b></span>
@@ -80,7 +86,7 @@
   <aside class="panel" id="list-panel">
     <div class="panel-head">
       <h2>Gateways <span class="count" id="count"></span></h2>
-      <label class="chk"><input type="checkbox" id="rank-mode" checked> highlight ranked</label>
+      <label class="chk winlink-only"><input type="checkbox" id="rank-mode" checked> highlight ranked</label>
     </div>
 
     <div class="legend">

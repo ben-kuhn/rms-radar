@@ -17,6 +17,7 @@ import (
 	"github.com/ben-kuhn/rms-radar/internal/catalog"
 	"github.com/ben-kuhn/rms-radar/internal/cmsapi"
 	"github.com/ben-kuhn/rms-radar/internal/propagation"
+	"github.com/ben-kuhn/rms-radar/internal/radiopost"
 )
 
 // Config configures the HTTP server.
@@ -29,6 +30,8 @@ type Config struct {
 	TileCacheDir      string
 	TileCacheMaxBytes int64
 	VHFMaxRangeKm     float64
+	// RadioPost serves the separate RadioPost directory; nil disables it.
+	RadioPost *radiopost.Loader
 	// ServiceCodesPath persists the runtime-configurable service-code list.
 	ServiceCodesPath string
 	// AdminToken, when set, is required in the X-RMS-Radar-Admin header to
@@ -54,6 +57,7 @@ type Server struct {
 	cfg       Config
 	web       fs.FS
 	loader    *cmsapi.Loader
+	radiopost *radiopost.Loader
 	heuristic *propagation.Heuristic
 	ranker    *propagation.Ranker
 
@@ -123,6 +127,7 @@ func New(cfg Config, web fs.FS, loader *cmsapi.Loader, heur *propagation.Heurist
 		cfg:           cfg,
 		web:           web,
 		loader:        loader,
+		radiopost:     cfg.RadioPost,
 		heuristic:     heur,
 		ranker:        &propagation.Ranker{Predictors: predictors},
 		voacapEnabled: voacapEnabled,
@@ -206,6 +211,10 @@ func (s *Server) Handler() http.Handler {
 	mux.HandleFunc("/api/rank", s.handleRank)
 	mux.HandleFunc("/api/config", s.handleConfig)
 	mux.HandleFunc("/api/refresh", s.handleRefresh)
+	if s.radiopost != nil {
+		mux.HandleFunc("/api/radiopost/gateways", s.handleRadioPostGateways)
+		mux.HandleFunc("/api/radiopost/refresh", s.handleRadioPostRefresh)
+	}
 	mux.HandleFunc("/api/desktop/hello", s.handleDesktopHello)
 	mux.HandleFunc("/api/desktop/beat", s.handleDesktopBeat)
 	mux.HandleFunc("/api/desktop/bye", s.handleDesktopBye)
@@ -352,6 +361,7 @@ func (s *Server) handleConfig(w http.ResponseWriter, r *http.Request) {
 		"desktop":                      s.cfg.DesktopMode || s.cfg.DesktopToken != "",
 		"voacap":                       s.voacapEnabled,
 		"tile_url":                     proxyTilePath,
+		"radiopost":                    s.radiopost != nil,
 	})
 }
 
